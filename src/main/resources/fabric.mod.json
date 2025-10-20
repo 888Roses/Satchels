@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "satchels",
+  "version": "${version}",
+  "name": "Satchels",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/satchels/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "net.rose.satchels.client.SatchelsDataGenerator"
+    ],
+    "client": [
+      "net.rose.satchels.client.SatchelsClient"
+    ],
+    "main": [
+      "net.rose.satchels.Satchels"
+    ]
+  },
+  "mixins": [
+    "satchels.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
