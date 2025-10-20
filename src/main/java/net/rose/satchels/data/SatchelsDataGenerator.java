@@ -7,6 +7,8 @@ public class SatchelsDataGenerator implements DataGeneratorEntrypoint {
 
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
-        FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
+        final var pack = fabricDataGenerator.createPack();
+        pack.addProvider(LangProvider::new);
+        pack.addProvider(ModelProvider::new);
     }
 }

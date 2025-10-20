@@ -1,3 +1,19 @@
 {
-  "item.satchels.satchel": "Satchel"
+  "item.satchels.black_satchel": "Black Satchel",
+  "item.satchels.blue_satchel": "Blue Satchel",
+  "item.satchels.brown_satchel": "Brown Satchel",
+  "item.satchels.cyan_satchel": "Cyan Satchel",
+  "item.satchels.gray_satchel": "Gray Satchel",
+  "item.satchels.green_satchel": "Green Satchel",
+  "item.satchels.light_blue_satchel": "Light Blue Satchel",
+  "item.satchels.light_gray_satchel": "Light Gray Satchel",
+  "item.satchels.lime_satchel": "Lime Satchel",
+  "item.satchels.magenta_satchel": "Magenta Satchel",
+  "item.satchels.orange_satchel": "Orange Satchel",
+  "item.satchels.pink_satchel": "Pink Satchel",
+  "item.satchels.purple_satchel": "Purple Satchel",
+  "item.satchels.red_satchel": "Red Satchel",
+  "item.satchels.satchel": "Satchel",
+  "item.satchels.white_satchel": "White Satchel",
+  "item.satchels.yellow_satchel": "Yellow Satchel"
 }
