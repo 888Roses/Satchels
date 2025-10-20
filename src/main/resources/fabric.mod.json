@@ -11,13 +11,13 @@
   "environment": "*",
   "entrypoints": {
     "fabric-datagen": [
-      "net.rose.satchels.client.SatchelsDataGenerator"
+      "net.rose.satchels.data.SatchelsDataGenerator"
     ],
     "client": [
       "net.rose.satchels.client.SatchelsClient"
     ],
     "main": [
-      "net.rose.satchels.Satchels"
+      "net.rose.satchels.common.Satchels"
     ]
   },
   "mixins": [
