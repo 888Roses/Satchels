@@ -125,4 +125,31 @@ public class SatchelItem extends Item {
     public Optional<TooltipData> getTooltipData(ItemStack itemStack) {
         return Optional.ofNullable(maybeGetSatchelComponent(itemStack).orElse(null));
     }
+
+    @Override
+    public boolean isItemBarVisible(ItemStack itemStack) {
+        return getStoredItemStackCount(itemStack) > 0;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack itemStack) {
+        final var maybeSatchelComponent = maybeGetSatchelComponent(itemStack);
+        if (maybeSatchelComponent.isPresent()) {
+            final var component = maybeSatchelComponent.get();
+            return Math.round(component.getOccupancy() * 13);
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack itemStack) {
+        final var maybeSatchelComponent = maybeGetSatchelComponent(itemStack);
+        if (maybeSatchelComponent.isPresent()) {
+            final var component = maybeSatchelComponent.get();
+            return component.getOccupancy() < 1F ? 0x5555FF : 0xFF5555;
+        }
+
+        return 0x373737;
+    }
 }
