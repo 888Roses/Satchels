@@ -14,7 +14,7 @@
   "item.satchels.purple_satchel": "Purple Satchel",
   "item.satchels.red_satchel": "Red Satchel",
   "item.satchels.satchel": "Satchel",
-  "item.satchels.satchel.desc": "Can multiple items of any stack size",
+  "item.satchels.satchel.desc": "Can hold multiple items of any stack size",
   "item.satchels.white_satchel": "White Satchel",
   "item.satchels.yellow_satchel": "Yellow Satchel"
 }
