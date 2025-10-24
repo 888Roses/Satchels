@@ -13,7 +13,7 @@ e4290c6a3669ff8751035e04f889c464c482358e assets/satchels/items/gray_satchel.json
 d95f55dc2ffcbcbc097363d4c2f8b6c41663cb52 assets/satchels/items/pink_satchel.json
 c4d59541e04b422d628d34ef6cb1c5ce2cf373c6 assets/satchels/items/purple_satchel.json
 c392e9fc5040d389fe7b72fecafb9674b2c96fe5 assets/satchels/items/red_satchel.json
-e80f8cc1a2cba23b92275d98625f85b405f1759f assets/satchels/items/satchel.json
+d0efc2990ba3539320f944e5322be90a28b1e8a5 assets/satchels/items/satchel.json
 f6d263c4e435b22f89a339666dc27f0b8cdebf03 assets/satchels/items/white_satchel.json
 86a141dd5b3a39ecdca9468305d29998a5cd9606 assets/satchels/items/yellow_satchel.json
 8da2e21e9acd77e71ca422df3767d9f1d2d12d65 assets/satchels/models/item/black_satchel.json
@@ -31,5 +31,7 @@ c0fe2c6aea9058b75df4ffcc1ae9a8265b7f7cdc assets/satchels/models/item/lime_satche
 e9328576860a0fa64f5488cc89894f8c2afdc1c8 assets/satchels/models/item/purple_satchel.json
 a620e99337cbaa97dd06959e4abdff1e03fa7f55 assets/satchels/models/item/red_satchel.json
 02337f5c86b6514fc0d21e93eca60b5a51b947fe assets/satchels/models/item/satchel.json
+f167c42dc5ce326a958949b91e23c5a84406117d assets/satchels/models/item/satchel_open_back.json
+81bd78496b41eb27b8bf58f362b5b506312c2a36 assets/satchels/models/item/satchel_open_front.json
 f7534944661e3eed88ab4528b0fc9a04ff30f64b assets/satchels/models/item/white_satchel.json
 8683101397c06c44763f37786d4696d05d27c2d7 assets/satchels/models/item/yellow_satchel.json

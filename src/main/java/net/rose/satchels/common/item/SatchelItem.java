@@ -119,6 +119,7 @@ public class SatchelItem extends Item {
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
                     playInsertSound(user, false);
+                    SatchelContentsComponent.selectedSlotIndex = -1;
                     return true;
                 }
 
@@ -134,6 +135,7 @@ public class SatchelItem extends Item {
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
                     playRemoveSound(user);
+                    SatchelContentsComponent.selectedSlotIndex = -1;
                     return true;
                 }
             }
@@ -159,6 +161,7 @@ public class SatchelItem extends Item {
                     refreshScreenHandler(user);
                     user.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 1, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
                     playInsertSound(user, false);
+                    SatchelContentsComponent.selectedSlotIndex = -1;
                     return true;
                 }
 
@@ -174,6 +177,7 @@ public class SatchelItem extends Item {
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
                     playRemoveSound(user);
+                    SatchelContentsComponent.selectedSlotIndex = -1;
                     return true;
                 }
 
@@ -261,6 +265,7 @@ public class SatchelItem extends Item {
                             0.75F, MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F)
                     );
 
+                    SatchelContentsComponent.selectedSlotIndex = -1;
                     return ActionResult.SUCCESS;
                 }
             }

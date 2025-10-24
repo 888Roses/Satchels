@@ -1,6 +1,39 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "satchels:item/satchel"
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:condition",
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "satchels:item/satchel"
+          },
+          "on_true": {
+            "type": "minecraft:composite",
+            "models": [
+              {
+                "type": "minecraft:model",
+                "model": "satchels:item/satchel_open_back"
+              },
+              {
+                "type": "satchels:satchel/selected_item"
+              },
+              {
+                "type": "minecraft:model",
+                "model": "satchels:item/satchel_open_front"
+              }
+            ]
+          },
+          "property": "satchels:satchel/has_selected_item"
+        },
+        "when": "gui"
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "satchels:item/satchel"
+    },
+    "property": "minecraft:display_context"
   }
 }
