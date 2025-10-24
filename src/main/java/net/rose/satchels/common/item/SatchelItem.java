@@ -201,8 +201,6 @@ public class SatchelItem extends Item {
         useInventoryItemStack = null;
 
         isUseInventoryOpen = !isUseInventoryOpen;
-        user.sendMessage(Text.literal((world.isClient() ? "Client" : "Server") + " Is Open: " + isUseInventoryOpen).withColor(world.isClient() ? 0x00FFFF : 0xFF00FF), false);
-
         final var satchelItemStack = user.getStackInHand(hand);
 
         if (!isUseInventoryOpen) {
