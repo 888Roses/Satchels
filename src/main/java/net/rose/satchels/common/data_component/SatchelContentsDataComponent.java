@@ -12,51 +12,43 @@ import net.minecraft.util.math.MathHelper;
 
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
-public record SatchelContentsComponent(List<ItemStack> stacks) implements TooltipData {
-    public static final SatchelContentsComponent DEFAULT = new SatchelContentsComponent(List.of());
+public record SatchelContentsDataComponent(List<ItemStack> stacks) implements TooltipData {
+    public static final SatchelContentsDataComponent DEFAULT = new SatchelContentsDataComponent(List.of());
     public static int selectedSlotIndex;
 
     // region Serialization
 
-    public static final Codec<SatchelContentsComponent> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder
+    public static final Codec<SatchelContentsDataComponent> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder
             .create(instance -> instance
-                    .group(ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(SatchelContentsComponent::stacks))
-                    .apply(instance, SatchelContentsComponent::new)
+                    .group(ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(SatchelContentsDataComponent::stacks))
+                    .apply(instance, SatchelContentsDataComponent::new)
             ));
-    public static final PacketCodec<RegistryByteBuf, SatchelContentsComponent> PACKET_CODEC = PacketCodec.of(
+
+    public static final PacketCodec<RegistryByteBuf, SatchelContentsDataComponent> PACKET_CODEC = PacketCodec.of(
             (value, buf) -> ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).encode(buf, value.stacks),
-            buf -> new SatchelContentsComponent(ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).decode(buf))
+            buf -> new SatchelContentsDataComponent(ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).decode(buf))
     );
 
     // endregion
 
     // region Implementation
 
-    public String toString() {
-        return "SatchelContents" + this.stacks;
+    public @NonNull String toString() {
+        return "SatchelContents " + this.stacks;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
+        if (obj == this) return true;
+        if (!(obj instanceof SatchelContentsDataComponent(List<ItemStack> otherStacks))) return false;
+        if (this.stacks.size() != otherStacks.size()) return false;
 
-        if (!(obj instanceof SatchelContentsComponent(List<ItemStack> otherStacks))) {
-            return false;
-        }
-
-        if (this.stacks.size() != otherStacks.size()) {
-            return false;
-        }
-
-        for (var i = 0; i < this.stacks.size(); i++) {
-            if (!ItemStack.areEqual(this.stacks.get(i), otherStacks.get(i))) {
-                return false;
-            }
+        for (int i = 0; i < this.stacks.size(); i++) {
+            if (!ItemStack.areEqual(this.stacks.get(i), otherStacks.get(i))) return false;
         }
 
         return true;
@@ -77,7 +69,7 @@ public record SatchelContentsComponent(List<ItemStack> stacks) implements Toolti
     public static final class Builder {
         private final List<ItemStack> stacks;
 
-        public Builder(SatchelContentsComponent baseComponent) {
+        public Builder(SatchelContentsDataComponent baseComponent) {
             this.stacks = new ArrayList<>(baseComponent.stacks);
         }
 
@@ -95,14 +87,14 @@ public record SatchelContentsComponent(List<ItemStack> stacks) implements Toolti
                 return Optional.empty();
             }
 
-            final var clampedIndex = MathHelper.clamp(selectedSlotIndex, 0, this.stacks.size() - 1);
-            final var itemStack = this.stacks.get(clampedIndex).copy();
+            int clampedIndex = MathHelper.clamp(selectedSlotIndex, 0, this.stacks.size() - 1);
+            ItemStack itemStack = this.stacks.get(clampedIndex).copy();
             this.stacks.remove(clampedIndex);
             return Optional.of(itemStack);
         }
 
-        public SatchelContentsComponent build() {
-            return new SatchelContentsComponent(List.of(this.stacks.toArray(ItemStack[]::new)));
+        public SatchelContentsDataComponent build() {
+            return new SatchelContentsDataComponent(List.of(this.stacks.toArray(ItemStack[]::new)));
         }
     }
 }

@@ -7,12 +7,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.MathHelper;
+import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
+import org.joml.Vector2i;
 
-import static net.rose.satchels.common.data_component.SatchelContentsComponent.selectedSlotIndex;
+import static net.rose.satchels.common.data_component.SatchelContentsDataComponent.selectedSlotIndex;
 
 public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     private final Scroller scroller;
@@ -27,14 +27,14 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     }
 
     public boolean onScroll(double horizontal, double vertical, int slotId, ItemStack itemStack) {
-        final var storedItemStackCount = SatchelItem.getStoredItemStackCount(itemStack);
+        int storedItemStackCount = SatchelItem.getStoredItemStackCount(itemStack);
         if (storedItemStackCount == 0) return false;
 
-        final var scrollDelta = this.scroller.update(horizontal, vertical);
-        final var scrollAmount = scrollDelta.y == 0 ? -scrollDelta.x : scrollDelta.y;
+        Vector2i scrollDelta = this.scroller.update(horizontal, vertical);
+        int scrollAmount = scrollDelta.y == 0 ? -scrollDelta.x : scrollDelta.y;
 
         if (scrollAmount != 0) {
-            final var cycledSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
+            int cycledSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
             this.setSlot(cycledSlotIndex);
         }
 
@@ -49,9 +49,8 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     private void setSlot(int selectedItemIndex) {
         if (selectedSlotIndex != selectedItemIndex) {
             selectedSlotIndex = selectedItemIndex;
+            SatchelsClient.playScrollSound();
         }
-
-        SatchelItem.playScrollSound();
     }
 
     public void onMouseClick(Slot slot, SlotActionType actionType) {

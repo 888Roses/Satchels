@@ -9,6 +9,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.init.ModItems;
+import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,7 +19,7 @@ public class ItemTagProvider extends FabricTagProvider.ItemTagProvider {
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+    protected void configure(RegistryWrapper.@NonNull WrapperLookup wrapperLookup) {
         getTagBuilder(ModItemTags.SATCHELS)
                 .add(Registries.ITEM.getId(ModItems.SATCHEL))
                 .add(Registries.ITEM.getId(ModItems.WHITE_SATCHEL))

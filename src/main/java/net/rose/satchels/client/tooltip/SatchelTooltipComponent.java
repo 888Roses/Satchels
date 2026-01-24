@@ -13,12 +13,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 
 import java.util.List;
 import java.util.Optional;
 
-public record SatchelTooltipComponent(SatchelContentsComponent data) implements TooltipComponent {
+public record SatchelTooltipComponent(SatchelContentsDataComponent data) implements TooltipComponent {
     private static final Identifier PROGRESS_BAR_BORDER_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_border");
     private static final Identifier PROGRESS_BAR_FILL_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_fill");
     private static final Identifier PROGRESS_BAR_FULL_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_full");
@@ -55,9 +55,9 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext drawContext) {
         drawContext.drawWrappedText(textRenderer, DESCRIPTION_TEXT, x, y, MAX_WIDTH, 0xFFFFFFFF, true);
 
-        final var slotIndex = SatchelContentsComponent.selectedSlotIndex;
+        int slotIndex = SatchelContentsDataComponent.selectedSlotIndex;
         if (slotIndex >= 0 && slotIndex < this.data.stacks().size()) {
-            final var itemStack = this.data.stacks().get(slotIndex);
+            ItemStack itemStack = this.data.stacks().get(slotIndex);
             Text text = itemStack.getFormattedName();
             int i = textRenderer.getWidth(text.asOrderedText());
             int j = x + width / 2 - 12;
@@ -65,12 +65,12 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
             drawContext.drawTooltipImmediately(textRenderer, List.of(tooltipComponent), j - i / 2, y - 16 - 2, HoveredTooltipPositioner.INSTANCE, itemStack.get(DataComponentTypes.TOOLTIP_STYLE));
         }
 
-        final var descriptionHeight = getDescriptionHeight(textRenderer);
+        int descriptionHeight = getDescriptionHeight(textRenderer);
         y += descriptionHeight;
 
         if (!this.data.stacks().isEmpty()) {
-            var seed = 1;
-            for (var i = 0; i < this.data.stacks().size(); i++) {
+            int seed = 1;
+            for (int i = 0; i < this.data.stacks().size(); i++) {
                 drawItem(seed, x - 2 + i * 24, y, this.data.stacks(), seed, textRenderer, drawContext);
                 seed++;
             }
@@ -83,11 +83,11 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
     }
 
     public static void drawItem(int index, int x, int y, List<ItemStack> stacks, int seed, TextRenderer textRenderer, DrawContext drawContext) {
-        final var slotIndex = index - 1;
-        final var isSlotSelected = slotIndex == SatchelContentsComponent.selectedSlotIndex;
-        final var itemStack = stacks.get(slotIndex);
+        int slotIndex = index - 1;
+        boolean isSlotSelected = slotIndex == SatchelContentsDataComponent.selectedSlotIndex;
+        ItemStack itemStack = stacks.get(slotIndex);
 
-        final var slotTexture = isSlotSelected ? BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE : BUNDLE_SLOT_BACKGROUND_TEXTURE;
+        Identifier slotTexture = isSlotSelected ? BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE : BUNDLE_SLOT_BACKGROUND_TEXTURE;
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, slotTexture, x, y, 24, 24);
 
         drawContext.drawItem(itemStack, x + 4, y + 4, seed);

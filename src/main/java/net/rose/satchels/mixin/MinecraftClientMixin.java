@@ -2,9 +2,10 @@ package net.rose.satchels.mixin;
 
 import net.minecraft.client.MinecraftClient;
 
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.MathHelper;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.KeyBinding;
+import net.rose.satchels.client.SatchelsClient;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,34 +15,40 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
+    /// Handles pressing the hotbar inputs to swap between different satchel slots.
     @Inject(method = "handleInputEvents", at = @At("HEAD"), cancellable = true)
-    private void invoke(CallbackInfo callbackInfo) {
+    private void satchels$handleInputEvents(CallbackInfo callbackInfo) {
         if (!SatchelItem.isUseInventoryOpen) {
             return;
         }
 
-        final var client = (MinecraftClient) (Object) this;
-        final var player = client.player;
-        if (player == null || player.isSpectator() || SatchelItem.useInventoryItemStack == null || SatchelItem.useInventoryItemStack.isEmpty()) {
+        MinecraftClient client = (MinecraftClient) (Object) this;
+        ClientPlayerEntity player = client.player;
+        if (player == null) {
             return;
         }
 
-        final var hotbarKeys = client.options.hotbarKeys;
-        var hasChanged = false;
+        if (player.isSpectator() || SatchelItem.useInventoryItemStack == null || SatchelItem.useInventoryItemStack.isEmpty()) {
+            return;
+        }
+
+        KeyBinding[] hotbarKeys = client.options.hotbarKeys;
+        boolean hotbarKeyWasPressed = false;
+
         for (int i = 0; i < hotbarKeys.length; ++i) {
             if (hotbarKeys[i].wasPressed()) {
-                hasChanged = true;
+                hotbarKeyWasPressed = true;
 
                 if (i >= SatchelItem.getStoredItemStackCount(SatchelItem.useInventoryItemStack)) {
                     break;
                 }
 
-                SatchelContentsComponent.selectedSlotIndex = i;
-                SatchelItem.playScrollSound();
+                SatchelContentsDataComponent.selectedSlotIndex = i;
+                SatchelsClient.playScrollSound();
             }
         }
 
-        if (hasChanged) {
+        if (hotbarKeyWasPressed) {
             callbackInfo.cancel();
         }
     }

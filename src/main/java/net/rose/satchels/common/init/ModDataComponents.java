@@ -4,18 +4,24 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
+import net.minecraft.registry.RegistryKey;
 import net.rose.satchels.common.Satchels;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 
-public class ModDataComponents {
-    public static final ComponentType<SatchelContentsComponent> SATCHEL_CONTENTS = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Satchels.identifier("satchel_content"), ComponentType
-                    .<SatchelContentsComponent>builder()
-                    .codec(SatchelContentsComponent.CODEC)
-                    .packetCodec(SatchelContentsComponent.PACKET_CODEC)
+public interface ModDataComponents {
+    ComponentType<SatchelContentsDataComponent> SATCHEL_CONTENTS = register(
+            Registries.DATA_COMPONENT_TYPE, "satchel_content", ComponentType
+                    .<SatchelContentsDataComponent>builder()
+                    .codec(SatchelContentsDataComponent.CODEC)
+                    .packetCodec(SatchelContentsDataComponent.PACKET_CODEC)
                     .build()
     );
 
-    public static void initialize() {
+    static <V, T extends V> T register(Registry<V> registry, String id, T entry) {
+        return Registry.register(registry, RegistryKey.of(registry.getKey(), Satchels.id(id)), entry);
+    }
+
+    static void initialize() {
+        Satchels.LOGGER.info("Registered Satchels Data Components");
     }
 }

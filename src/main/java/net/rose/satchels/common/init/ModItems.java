@@ -6,42 +6,48 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 import net.rose.satchels.common.Satchels;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
 import java.util.function.Function;
 
-public class ModItems {
-    public static final Item SATCHEL = registerSatchel("");
-    public static final Item WHITE_SATCHEL = registerSatchel("white");
-    public static final Item LIGHT_GRAY_SATCHEL = registerSatchel("light_gray");
-    public static final Item GRAY_SATCHEL = registerSatchel("gray");
-    public static final Item BLACK_SATCHEL = registerSatchel("black");
-    public static final Item BROWN_SATCHEL = registerSatchel("brown");
-    public static final Item RED_SATCHEL = registerSatchel("red");
-    public static final Item ORANGE_SATCHEL = registerSatchel("orange");
-    public static final Item YELLOW_SATCHEL = registerSatchel("yellow");
-    public static final Item LIME_SATCHEL = registerSatchel("lime");
-    public static final Item GREEN_SATCHEL = registerSatchel("green");
-    public static final Item CYAN_SATCHEL = registerSatchel("cyan");
-    public static final Item LIGHT_BLUE_SATCHEL = registerSatchel("light_blue");
-    public static final Item BLUE_SATCHEL = registerSatchel("blue");
-    public static final Item PURPLE_SATCHEL = registerSatchel("purple");
-    public static final Item MAGENTA_SATCHEL = registerSatchel("magenta");
-    public static final Item PINK_SATCHEL = registerSatchel("pink");
+public interface ModItems {
+    Item SATCHEL = registerSatchel("");
+    Item WHITE_SATCHEL = registerSatchel("white");
+    Item LIGHT_GRAY_SATCHEL = registerSatchel("light_gray");
+    Item GRAY_SATCHEL = registerSatchel("gray");
+    Item BLACK_SATCHEL = registerSatchel("black");
+    Item BROWN_SATCHEL = registerSatchel("brown");
+    Item RED_SATCHEL = registerSatchel("red");
+    Item ORANGE_SATCHEL = registerSatchel("orange");
+    Item YELLOW_SATCHEL = registerSatchel("yellow");
+    Item LIME_SATCHEL = registerSatchel("lime");
+    Item GREEN_SATCHEL = registerSatchel("green");
+    Item CYAN_SATCHEL = registerSatchel("cyan");
+    Item LIGHT_BLUE_SATCHEL = registerSatchel("light_blue");
+    Item BLUE_SATCHEL = registerSatchel("blue");
+    Item PURPLE_SATCHEL = registerSatchel("purple");
+    Item MAGENTA_SATCHEL = registerSatchel("magenta");
+    Item PINK_SATCHEL = registerSatchel("pink");
 
-    public static Item registerSatchel(String satchelColor) {
+    static Item registerSatchel(String satchelColor) {
+        String identifier = satchelColor.isEmpty() ? "satchel" : satchelColor + "_satchel";
+
         return register(
-                satchelColor.isEmpty() ? "satchel" : satchelColor + "_satchel", SatchelItem::new,
-                new Item.Settings().maxCount(1).component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsComponent.DEFAULT)
+                identifier,
+                SatchelItem::new,
+                new Item.Settings()
+                        .maxCount(1)
+                        .component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsDataComponent.DEFAULT)
         );
     }
 
-    public static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {
-        final var key = RegistryKey.of(RegistryKeys.ITEM, Satchels.identifier(name));
+    static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {
+        RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, Satchels.id(name));
         return Items.register(key, factory, settings);
     }
 
-    public static void initialize() {
+    static void initialize() {
+        Satchels.LOGGER.info("Registered Satchels Items");
     }
 }

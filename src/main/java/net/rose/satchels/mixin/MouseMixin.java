@@ -4,9 +4,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.client.input.Scroller;
 
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.item.ItemStack;
+import net.rose.satchels.client.SatchelsClient;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.rose.satchels.common.item.SatchelItem;
 
-import static net.rose.satchels.common.data_component.SatchelContentsComponent.selectedSlotIndex;
+import static net.rose.satchels.common.data_component.SatchelContentsDataComponent.selectedSlotIndex;
 
 @Mixin(Mouse.class)
 public abstract class MouseMixin {
@@ -24,34 +23,30 @@ public abstract class MouseMixin {
     @Final
     private MinecraftClient client;
 
+    /// Handles scrolling through satchel slots.
     @Inject(method = "onMouseScroll", at = @At("HEAD"), cancellable = true)
-    private void onMouseScroll$satchels(long window, double horizontal, double vertical, CallbackInfo callbackInfo) {
-        if (window != this.client.getWindow().getHandle()) {
+    private void satchels$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo callbackInfo) {
+        if (window != client.getWindow().getHandle()) {
             return;
         }
 
-        this.client.getInactivityFpsLimiter().onInput();
-        final var isDiscrete = this.client.options.getDiscreteMouseScroll().getValue();
-        final var mouseScrollAmount = this.client.options.getMouseWheelSensitivity().getValue();
-        final var horizontalAmount = (isDiscrete ? Math.signum(horizontal) : horizontal) * mouseScrollAmount;
-        final var verticalAmount = (isDiscrete ? Math.signum(vertical) : vertical) * mouseScrollAmount;
+        client.getInactivityFpsLimiter().onInput();
+        Boolean isDiscrete = client.options.getDiscreteMouseScroll().getValue();
+        Double mouseScrollAmount = client.options.getMouseWheelSensitivity().getValue();
+        double horizontalAmount = (isDiscrete ? Math.signum(horizontal) : horizontal) * mouseScrollAmount;
+        double verticalAmount = (isDiscrete ? Math.signum(vertical) : vertical) * mouseScrollAmount;
 
-        final var itemStack = SatchelItem.useInventoryItemStack;
-        if (itemStack == null || itemStack.isEmpty()) {
-            return;
-        }
+        ItemStack itemStack = SatchelItem.useInventoryItemStack;
+        if (itemStack == null || itemStack.isEmpty()) return;
 
-        final var storedItemStackCount = SatchelItem.getStoredItemStackCount(itemStack);
-        if (storedItemStackCount == 0) {
-            return;
-        }
+        int storedItemStackCount = SatchelItem.getStoredItemStackCount(itemStack);
+        if (storedItemStackCount == 0) return;
 
-        final var scrollAmount = verticalAmount == 0 ? -horizontalAmount : verticalAmount;
+        double scrollAmount = verticalAmount == 0 ? -horizontalAmount : verticalAmount;
 
         if (scrollAmount != 0) {
             selectedSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
-            SatchelItem.playScrollSound();
-
+            SatchelsClient.playScrollSound();
             callbackInfo.cancel();
         }
     }

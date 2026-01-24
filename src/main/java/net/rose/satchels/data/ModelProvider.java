@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 
 import net.minecraft.client.data.*;
 
+import net.minecraft.client.render.item.model.ItemModel;
 import net.minecraft.client.render.item.property.select.DisplayContextProperty;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDisplayContext;
@@ -20,13 +21,11 @@ public class ModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-
     }
 
     @Override
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-        // itemModelGenerator.register(ModItems.SATCHEL, Models.GENERATED);
-        this.registerSatchel(itemModelGenerator, ModItems.SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.SATCHEL);
 
         itemModelGenerator.register(ModItems.WHITE_SATCHEL, Models.GENERATED);
         itemModelGenerator.register(ModItems.LIGHT_GRAY_SATCHEL, Models.GENERATED);
@@ -47,16 +46,16 @@ public class ModelProvider extends FabricModelProvider {
     }
 
     private void registerSatchel(ItemModelGenerator itemModelGenerator, Item item) {
-        final var generated = ItemModels.basic(itemModelGenerator.upload(item, Models.GENERATED));
-        final var openBackIdentifier = this.uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_BACK, "_open_back");
-        final var openFrontIdentifier = this.uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_FRONT, "_open_front");
-        final var selectedItemModel = ItemModels.composite(ItemModels.basic(openBackIdentifier), new SatchelSelectedItemModel.Unbaked(), ItemModels.basic(openFrontIdentifier));
-        final var effectiveModel = ItemModels.condition(new SatchelHasSelectedItemProperty(), selectedItemModel, generated);
+        ItemModel.Unbaked generated = ItemModels.basic(itemModelGenerator.upload(item, Models.GENERATED));
+        Identifier openBackIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_BACK, "_open_back");
+        Identifier openFrontIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_FRONT, "_open_front");
+        ItemModel.Unbaked selectedItemModel = ItemModels.composite(ItemModels.basic(openBackIdentifier), new SatchelSelectedItemModel.Unbaked(), ItemModels.basic(openFrontIdentifier));
+        ItemModel.Unbaked effectiveModel = ItemModels.condition(new SatchelHasSelectedItemProperty(), selectedItemModel, generated);
         itemModelGenerator.output.accept(item, ItemModels.select(new DisplayContextProperty(), generated, ItemModels.switchCase(ItemDisplayContext.GUI, effectiveModel)));
     }
 
     private Identifier uploadOpenSatchelModel(ItemModelGenerator itemModelGenerator, Item item, Model model, String textureSuffix) {
-        final var identifier = TextureMap.getSubId(item, textureSuffix);
+        Identifier identifier = TextureMap.getSubId(item, textureSuffix);
         return model.upload(item, TextureMap.layer0(identifier), itemModelGenerator.modelCollector);
     }
 }

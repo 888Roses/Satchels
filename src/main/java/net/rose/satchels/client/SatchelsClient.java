@@ -5,29 +5,41 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.item.model.ItemModelTypes;
 import net.minecraft.client.render.item.property.bool.BooleanProperties;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 import net.rose.satchels.client.item_model.SatchelHasSelectedItemProperty;
 import net.rose.satchels.client.item_model.SatchelSelectedItemModel;
 import net.rose.satchels.client.overlay.SatchelUseInventoryHudElement;
 import net.rose.satchels.client.tooltip.SatchelTooltipComponent;
 import net.rose.satchels.common.Satchels;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
 
 public class SatchelsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         TooltipComponentCallback.EVENT.register(tooltipData -> {
-            if (tooltipData instanceof SatchelContentsComponent data) return new SatchelTooltipComponent(data);
+            if (tooltipData instanceof SatchelContentsDataComponent data) return new SatchelTooltipComponent(data);
             return null;
         });
 
-        HudElementRegistry.addLast(Satchels.identifier("satchel_use_inventory"), new SatchelUseInventoryHudElement());
+        HudElementRegistry.addLast(Satchels.id("satchel_use_inventory"), new SatchelUseInventoryHudElement());
 
-        ClientPlayNetworking.registerGlobalReceiver(SatchelSelectedSlotS2CPayload.ID, (payload, context) -> SatchelContentsComponent.selectedSlotIndex = payload.selectedItemSlot());
+        ClientPlayNetworking.registerGlobalReceiver(SatchelSelectedSlotS2CPayload.ID, SatchelSelectedSlotS2CPayload::receive);
 
-        ItemModelTypes.ID_MAPPER.put(Satchels.identifier("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
-        BooleanProperties.ID_MAPPER.put(Satchels.identifier("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
+        ItemModelTypes.ID_MAPPER.put(Satchels.id("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
+        BooleanProperties.ID_MAPPER.put(Satchels.id("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
+    }
+
+    public static void playScrollSound() {
+        ClientPlayerEntity clientPlayer = MinecraftClient.getInstance().player;
+        if (clientPlayer == null) return;
+
+        float pitch = MathHelper.nextFloat(clientPlayer.getRandom(), 1.95f, 2f);
+        clientPlayer.playSound(SoundEvents.UI_HUD_BUBBLE_POP, 0.5f, pitch);
     }
 }

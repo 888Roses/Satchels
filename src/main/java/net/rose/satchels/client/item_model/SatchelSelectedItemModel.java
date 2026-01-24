@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.render.item.model.ItemModel;
@@ -15,10 +14,12 @@ import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.HeldItemContext;
 
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class SatchelSelectedItemModel implements ItemModel {
@@ -27,13 +28,12 @@ public class SatchelSelectedItemModel implements ItemModel {
     public void update(ItemRenderState state, ItemStack itemStack, ItemModelManager resolver, ItemDisplayContext displayContext, @Nullable ClientWorld world, @Nullable HeldItemContext heldItemContext, int seed) {
         state.addModelKey(this);
 
-        final var maybeComponent = SatchelItem.maybeGetSatchelComponent(itemStack);
-        if (maybeComponent.isPresent()) {
-            final var component = maybeComponent.get();
-            final var stacks = component.stacks();
+        SatchelContentsDataComponent component = SatchelItem.getSatchelDataComponent(itemStack);
+        if (component != null) {
+            List<ItemStack> stacks = component.stacks();
 
-            if (SatchelContentsComponent.selectedSlotIndex >= 0 && SatchelContentsComponent.selectedSlotIndex < stacks.size()) {
-                final var stack = stacks.get(SatchelContentsComponent.selectedSlotIndex);
+            if (SatchelContentsDataComponent.selectedSlotIndex >= 0 && SatchelContentsDataComponent.selectedSlotIndex < stacks.size()) {
+                ItemStack stack = stacks.get(SatchelContentsDataComponent.selectedSlotIndex);
                 if (!itemStack.isEmpty()) {
                     resolver.update(state, stack, displayContext, world, heldItemContext, seed);
                 }
