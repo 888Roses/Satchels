@@ -5,8 +5,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.item.model.ItemModelTypes;
 import net.minecraft.client.render.item.property.bool.BooleanProperties;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 import net.rose.satchels.client.item_model.SatchelHasSelectedItemProperty;
 import net.rose.satchels.client.item_model.SatchelSelectedItemModel;
 import net.rose.satchels.client.overlay.SatchelUseInventoryHudElement;
@@ -29,5 +33,13 @@ public class SatchelsClient implements ClientModInitializer {
 
         ItemModelTypes.ID_MAPPER.put(Satchels.id("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
         BooleanProperties.ID_MAPPER.put(Satchels.id("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
+    }
+
+    public static void playScrollSound() {
+        ClientPlayerEntity clientPlayer = MinecraftClient.getInstance().player;
+        if (clientPlayer == null) return;
+
+        float pitch = MathHelper.nextFloat(clientPlayer.getRandom(), 1.95f, 2f);
+        clientPlayer.playSound(SoundEvents.UI_HUD_BUBBLE_POP, 0.5f, pitch);
     }
 }

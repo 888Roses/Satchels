@@ -71,18 +71,6 @@ public class SatchelItem extends Item {
         user.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 0.75F, pitch);
     }
 
-    // TODO
-    public static void playScrollSound() {
-        // var clientPlayer = MinecraftClient.getInstance().player;
-        //
-        // if (clientPlayer != null) {
-        //     clientPlayer.playSound(
-        //             SoundEvents.ENTITY_ITEM_PICKUP,
-        //             0.3F, MathHelper.nextFloat(clientPlayer.getRandom(), 0.95F, 1.05F)
-        //     );
-        // }
-    }
-
     // endregion
 
     // region In Inventory Behavior
@@ -221,7 +209,6 @@ public class SatchelItem extends Item {
         }
 
         useInventoryItemStack = null;
-
         isUseInventoryOpen = !isUseInventoryOpen;
         ItemStack satchelItemStack = user.getStackInHand(hand);
 
@@ -235,12 +222,7 @@ public class SatchelItem extends Item {
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
 
-                    world.playSound(
-                            null, user.getBlockPos(),
-                            SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(),
-                            SoundCategory.PLAYERS,
-                            0.75F, MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F)
-                    );
+                    user.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 0.75F, MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F));
 
                     SatchelContentsDataComponent.selectedSlotIndex = -1;
                     return ActionResult.SUCCESS;
@@ -252,13 +234,7 @@ public class SatchelItem extends Item {
 
         SatchelContentsDataComponent.selectedSlotIndex = 0;
 
-        world.playSound(
-                null, user.getBlockPos(),
-                SoundEvents.ITEM_BUNDLE_DROP_CONTENTS,
-                SoundCategory.PLAYERS,
-                0.9F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F)
-        );
-
+        user.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.9F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
         useInventoryItemStack = satchelItemStack;
         return ActionResult.SUCCESS;
     }

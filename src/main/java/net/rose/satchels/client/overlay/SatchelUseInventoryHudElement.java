@@ -18,6 +18,7 @@ import net.minecraft.util.Util;
 import net.rose.satchels.client.tooltip.SatchelTooltipComponent;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ import static net.rose.satchels.common.item.SatchelItem.useInventoryItemStack;
 
 public class SatchelUseInventoryHudElement implements HudElement {
     @Override
-    public void render(DrawContext context, RenderTickCounter tickCounter) {
+    public void render(@NonNull DrawContext context, @NonNull RenderTickCounter tickCounter) {
         ItemStack satchelStack = useInventoryItemStack;
         if (!SatchelItem.isUseInventoryOpen || satchelStack == null || satchelStack.isEmpty()) {
             return;

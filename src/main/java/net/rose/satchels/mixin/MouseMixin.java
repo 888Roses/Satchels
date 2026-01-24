@@ -5,6 +5,7 @@ import net.minecraft.client.Mouse;
 import net.minecraft.client.input.Scroller;
 
 import net.minecraft.item.ItemStack;
+import net.rose.satchels.client.SatchelsClient;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,7 +46,7 @@ public abstract class MouseMixin {
 
         if (scrollAmount != 0) {
             selectedSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
-            SatchelItem.playScrollSound();
+            SatchelsClient.playScrollSound();
             callbackInfo.cancel();
         }
     }

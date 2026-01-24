@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
+import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
 import org.joml.Vector2i;
@@ -48,9 +49,8 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     private void setSlot(int selectedItemIndex) {
         if (selectedSlotIndex != selectedItemIndex) {
             selectedSlotIndex = selectedItemIndex;
+            SatchelsClient.playScrollSound();
         }
-
-        SatchelItem.playScrollSound();
     }
 
     public void onMouseClick(Slot slot, SlotActionType actionType) {

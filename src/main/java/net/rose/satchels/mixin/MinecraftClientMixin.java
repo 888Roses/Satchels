@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
+import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
@@ -43,7 +44,7 @@ public class MinecraftClientMixin {
                 }
 
                 SatchelContentsDataComponent.selectedSlotIndex = i;
-                SatchelItem.playScrollSound();
+                SatchelsClient.playScrollSound();
             }
         }
 
