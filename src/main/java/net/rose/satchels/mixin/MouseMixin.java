@@ -4,9 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.client.input.Scroller;
 
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.rose.satchels.common.item.SatchelItem;
 
-import static net.rose.satchels.common.data_component.SatchelContentsComponent.selectedSlotIndex;
+import static net.rose.satchels.common.data_component.SatchelContentsDataComponent.selectedSlotIndex;
 
 @Mixin(Mouse.class)
 public abstract class MouseMixin {

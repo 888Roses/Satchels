@@ -6,14 +6,14 @@ import net.minecraft.registry.Registry;
 
 import net.minecraft.registry.RegistryKey;
 import net.rose.satchels.common.Satchels;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 
 public interface ModDataComponents {
-    ComponentType<SatchelContentsComponent> SATCHEL_CONTENTS = register(
+    ComponentType<SatchelContentsDataComponent> SATCHEL_CONTENTS = register(
             Registries.DATA_COMPONENT_TYPE, "satchel_content", ComponentType
-                    .<SatchelContentsComponent>builder()
-                    .codec(SatchelContentsComponent.CODEC)
-                    .packetCodec(SatchelContentsComponent.PACKET_CODEC)
+                    .<SatchelContentsDataComponent>builder()
+                    .codec(SatchelContentsDataComponent.CODEC)
+                    .packetCodec(SatchelContentsDataComponent.PACKET_CODEC)
                     .build()
     );
 

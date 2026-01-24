@@ -15,20 +15,20 @@ import net.rose.satchels.common.item.SatchelItem;
 
 import java.util.*;
 
-public record SatchelContentsComponent(List<ItemStack> stacks) implements TooltipData {
-    public static final SatchelContentsComponent DEFAULT = new SatchelContentsComponent(List.of());
+public record SatchelContentsDataComponent(List<ItemStack> stacks) implements TooltipData {
+    public static final SatchelContentsDataComponent DEFAULT = new SatchelContentsDataComponent(List.of());
     public static int selectedSlotIndex;
 
     // region Serialization
 
-    public static final Codec<SatchelContentsComponent> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder
+    public static final Codec<SatchelContentsDataComponent> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder
             .create(instance -> instance
-                    .group(ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(SatchelContentsComponent::stacks))
-                    .apply(instance, SatchelContentsComponent::new)
+                    .group(ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(SatchelContentsDataComponent::stacks))
+                    .apply(instance, SatchelContentsDataComponent::new)
             ));
-    public static final PacketCodec<RegistryByteBuf, SatchelContentsComponent> PACKET_CODEC = PacketCodec.of(
+    public static final PacketCodec<RegistryByteBuf, SatchelContentsDataComponent> PACKET_CODEC = PacketCodec.of(
             (value, buf) -> ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).encode(buf, value.stacks),
-            buf -> new SatchelContentsComponent(ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).decode(buf))
+            buf -> new SatchelContentsDataComponent(ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).decode(buf))
     );
 
     // endregion
@@ -45,7 +45,7 @@ public record SatchelContentsComponent(List<ItemStack> stacks) implements Toolti
             return true;
         }
 
-        if (!(obj instanceof SatchelContentsComponent(List<ItemStack> otherStacks))) {
+        if (!(obj instanceof SatchelContentsDataComponent(List<ItemStack> otherStacks))) {
             return false;
         }
 
@@ -77,7 +77,7 @@ public record SatchelContentsComponent(List<ItemStack> stacks) implements Toolti
     public static final class Builder {
         private final List<ItemStack> stacks;
 
-        public Builder(SatchelContentsComponent baseComponent) {
+        public Builder(SatchelContentsDataComponent baseComponent) {
             this.stacks = new ArrayList<>(baseComponent.stacks);
         }
 
@@ -101,8 +101,8 @@ public record SatchelContentsComponent(List<ItemStack> stacks) implements Toolti
             return Optional.of(itemStack);
         }
 
-        public SatchelContentsComponent build() {
-            return new SatchelContentsComponent(List.of(this.stacks.toArray(ItemStack[]::new)));
+        public SatchelContentsDataComponent build() {
+            return new SatchelContentsDataComponent(List.of(this.stacks.toArray(ItemStack[]::new)));
         }
     }
 }

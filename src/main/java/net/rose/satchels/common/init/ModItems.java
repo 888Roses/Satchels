@@ -6,7 +6,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 import net.rose.satchels.common.Satchels;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
 import java.util.function.Function;
@@ -38,7 +38,7 @@ public interface ModItems {
                 SatchelItem::new,
                 new Item.Settings()
                         .maxCount(1)
-                        .component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsComponent.DEFAULT)
+                        .component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsDataComponent.DEFAULT)
         );
     }
 

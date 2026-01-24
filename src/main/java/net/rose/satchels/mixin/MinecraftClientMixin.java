@@ -2,9 +2,7 @@ package net.rose.satchels.mixin;
 
 import net.minecraft.client.MinecraftClient;
 
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.MathHelper;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,7 +34,7 @@ public class MinecraftClientMixin {
                     break;
                 }
 
-                SatchelContentsComponent.selectedSlotIndex = i;
+                SatchelContentsDataComponent.selectedSlotIndex = i;
                 SatchelItem.playScrollSound();
             }
         }

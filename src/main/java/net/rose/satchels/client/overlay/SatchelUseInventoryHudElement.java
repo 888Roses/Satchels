@@ -15,7 +15,7 @@ import net.minecraft.util.Util;
 import net.rose.satchels.client.tooltip.SatchelTooltipComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
-import static net.rose.satchels.common.data_component.SatchelContentsComponent.selectedSlotIndex;
+import static net.rose.satchels.common.data_component.SatchelContentsDataComponent.selectedSlotIndex;
 import static net.rose.satchels.common.item.SatchelItem.useInventoryItemStack;
 
 public class SatchelUseInventoryHudElement implements HudElement {
@@ -26,9 +26,8 @@ public class SatchelUseInventoryHudElement implements HudElement {
             return;
         }
 
-        final var maybeSatchelComponent = SatchelItem.maybeGetSatchelComponent(satchelStack);
-        if (maybeSatchelComponent.isPresent()) {
-            final var satchelComponent = maybeSatchelComponent.get();
+        final var satchelComponent = SatchelItem.getSatchelDataComponent(satchelStack);
+        if (satchelComponent != null) {
 
             var x = context.getScaledWindowWidth() / 2;
             final var y = context.getScaledWindowHeight() - 48;
