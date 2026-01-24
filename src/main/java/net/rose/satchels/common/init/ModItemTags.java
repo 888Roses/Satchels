@@ -6,17 +6,18 @@ import net.minecraft.registry.tag.TagKey;
 
 import net.rose.satchels.common.Satchels;
 
-public class ModItemTags {
-    public static final TagKey<Item> SATCHELS = item("satchels");
-    public static final TagKey<Item> SATCHEL_EXCLUDED = item("satchel_excluded");
+public interface ModItemTags {
+    TagKey<Item> SATCHELS = item("satchels");
+    TagKey<Item> SATCHEL_EXCLUDED = item("satchel_excluded");
 
     private static TagKey<Item> item(String name) {
         return TagKey.of(
                 Registries.ITEM.getKey(),
-                Satchels.identifier(name)
+                Satchels.id(name)
         );
     }
 
-    public static void initialize() {
+    static void initialize() {
+        Satchels.LOGGER.info("Registered Satchels Item Tags");
     }
 }

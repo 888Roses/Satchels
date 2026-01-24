@@ -12,11 +12,14 @@ import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.init.ModItems;
 import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Satchels implements ModInitializer {
     public static final String MOD_ID = "satchels";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static Identifier identifier(String path) {
+    public static Identifier id(String path) {
         return Identifier.of(MOD_ID, path);
     }
 

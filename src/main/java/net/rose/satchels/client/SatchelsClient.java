@@ -23,11 +23,11 @@ public class SatchelsClient implements ClientModInitializer {
             return null;
         });
 
-        HudElementRegistry.addLast(Satchels.identifier("satchel_use_inventory"), new SatchelUseInventoryHudElement());
+        HudElementRegistry.addLast(Satchels.id("satchel_use_inventory"), new SatchelUseInventoryHudElement());
 
         ClientPlayNetworking.registerGlobalReceiver(SatchelSelectedSlotS2CPayload.ID, (payload, context) -> SatchelContentsComponent.selectedSlotIndex = payload.selectedItemSlot());
 
-        ItemModelTypes.ID_MAPPER.put(Satchels.identifier("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
-        BooleanProperties.ID_MAPPER.put(Satchels.identifier("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
+        ItemModelTypes.ID_MAPPER.put(Satchels.id("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
+        BooleanProperties.ID_MAPPER.put(Satchels.id("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
     }
 }
