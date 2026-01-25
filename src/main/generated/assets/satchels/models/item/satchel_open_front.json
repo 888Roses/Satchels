@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/template_bundle_open_front",
   "textures": {
-    "layer0": "satchels:item/satchel_open_front"
+    "layer0": "satchels:item/satchel_front"
   }
 }

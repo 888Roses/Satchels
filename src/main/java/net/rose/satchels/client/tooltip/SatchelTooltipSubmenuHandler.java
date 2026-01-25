@@ -46,7 +46,7 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
 
     @Override
     public void reset(Slot slot) {
-        setSlot(slot);
+        //setSlot(slot);
     }
 
     private void setSlot(Slot slot) {

@@ -26,29 +26,28 @@ public class ModelProvider extends FabricModelProvider {
     @Override
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
         registerSatchel(itemModelGenerator, ModItems.SATCHEL);
-
-        itemModelGenerator.register(ModItems.WHITE_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.LIGHT_GRAY_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.GRAY_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.BLACK_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.BROWN_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.RED_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.ORANGE_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.YELLOW_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.LIME_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.GREEN_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.CYAN_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.LIGHT_BLUE_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.BLUE_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.PURPLE_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.MAGENTA_SATCHEL, Models.GENERATED);
-        itemModelGenerator.register(ModItems.PINK_SATCHEL, Models.GENERATED);
+        registerSatchel(itemModelGenerator, ModItems.WHITE_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.LIGHT_GRAY_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.GRAY_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.BLACK_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.BROWN_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.RED_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.ORANGE_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.YELLOW_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.LIME_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.GREEN_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.CYAN_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.LIGHT_BLUE_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.BLUE_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.PURPLE_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.MAGENTA_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.PINK_SATCHEL);
     }
 
     private void registerSatchel(ItemModelGenerator itemModelGenerator, Item item) {
         ItemModel.Unbaked generated = ItemModels.basic(itemModelGenerator.upload(item, Models.GENERATED));
-        Identifier openBackIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_BACK, "_open_back");
-        Identifier openFrontIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_FRONT, "_open_front");
+        Identifier openBackIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_BACK, "_back");
+        Identifier openFrontIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_FRONT, "_front");
         ItemModel.Unbaked selectedItemModel = ItemModels.composite(ItemModels.basic(openBackIdentifier), new SatchelSelectedItemModel.Unbaked(), ItemModels.basic(openFrontIdentifier));
         ItemModel.Unbaked effectiveModel = ItemModels.condition(new SatchelHasSelectedItemProperty(), selectedItemModel, generated);
         itemModelGenerator.output.accept(item, ItemModels.select(new DisplayContextProperty(), generated, ItemModels.switchCase(ItemDisplayContext.GUI, effectiveModel)));
