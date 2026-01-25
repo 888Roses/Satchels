@@ -15,6 +15,8 @@ import net.rose.satchels.common.init.ModItemTags;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
+import java.util.function.Consumer;
+
 public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     private final Scroller scroller;
 
@@ -46,28 +48,32 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
 
     @Override
     public void reset(Slot slot) {
-        //setSlot(slot);
+        setSlot(slot);
     }
 
     private void setSlot(Slot slot) {
         ItemStack itemStack = slot.getStack();
-
-        setSlot(itemStack, itemStack.get(ModDataComponents.SATCHEL_CONTENTS), -1);
+        slot.setStack(setSlot(itemStack, itemStack.get(ModDataComponents.SATCHEL_CONTENTS), -1));
     }
 
-    private void setSlot(ItemStack itemStack, @Nullable SatchelContentsDataComponent component, int selectedItemIndex) {
+    private ItemStack setSlot(ItemStack itemStack, @Nullable SatchelContentsDataComponent component, int selectedItemIndex) {
         if (component == null) {
-            return;
+            return itemStack;
         }
 
         if (component.selectedSlotIndex() != selectedItemIndex) {
-            itemStack.set(
-                    ModDataComponents.SATCHEL_CONTENTS,
-                    new SatchelContentsDataComponent.Builder(component).setSelectedSlotIndex(selectedItemIndex).build()
-            );
+            Satchels.LOGGER.info("UwU " + component.selectedSlotIndex() + " != " + selectedItemIndex);
+
+            var builder = new SatchelContentsDataComponent.Builder(component);
+            builder.setSelectedSlotIndex(selectedItemIndex);
+            builder.setOpen(selectedItemIndex != -1 && builder.isOpen());
+
+            itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
 
             SatchelsClient.playScrollSound();
         }
+
+        return itemStack;
     }
 
     public void onMouseClick(Slot slot, SlotActionType actionType) {

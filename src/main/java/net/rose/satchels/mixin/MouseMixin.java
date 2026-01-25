@@ -62,7 +62,6 @@ public abstract class MouseMixin {
                 inventory.setStack(inventory.getSelectedSlot(), selectedStack);
 
                 SatchelsClient.playScrollSound();
-
                 callbackInfo.cancel();
             }
         }

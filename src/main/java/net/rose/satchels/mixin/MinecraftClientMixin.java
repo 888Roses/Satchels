@@ -10,7 +10,6 @@ import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
-import net.rose.satchels.common.item.SatchelItem;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
