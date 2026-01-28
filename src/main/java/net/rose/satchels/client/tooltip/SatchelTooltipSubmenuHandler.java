@@ -17,8 +17,6 @@ import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
-import java.util.function.Consumer;
-
 public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     private final Scroller scroller;
 
