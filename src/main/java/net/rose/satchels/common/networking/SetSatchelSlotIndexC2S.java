@@ -7,17 +7,19 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.rose.satchels.common.Satchels;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 
-public record SetSatchelSlotIndexC2S(int slotId, int selectedSlotIndex) implements CustomPayload {
+public record SetSatchelSlotIndexC2S(int inventorySlotId, int satchelSlotIndex) implements CustomPayload {
     public static final CustomPayload.Id<SetSatchelSlotIndexC2S> ID = new Id<>(Satchels.id("set_satchel_slot_index"));
 
     public static final PacketCodec<RegistryByteBuf, SetSatchelSlotIndexC2S> CODEC = PacketCodec.tuple(
-            PacketCodecs.INTEGER, SetSatchelSlotIndexC2S::slotId,
-            PacketCodecs.INTEGER, SetSatchelSlotIndexC2S::selectedSlotIndex,
+            PacketCodecs.INTEGER, SetSatchelSlotIndexC2S::inventorySlotId,
+            PacketCodecs.INTEGER, SetSatchelSlotIndexC2S::satchelSlotIndex,
             SetSatchelSlotIndexC2S::new
     );
 
@@ -27,18 +29,31 @@ public record SetSatchelSlotIndexC2S(int slotId, int selectedSlotIndex) implemen
     }
 
     public void receive(ServerPlayNetworking.Context context) {
-        ScreenHandler handler = context.player().currentScreenHandler;
-        // context.player().sendMessage(Text.literal("SERVER slot: " + slotId + " selected: " + selectedSlotIndex));
+        // Cannot select satchel slot for an ItemStack outside the inventory slot array.
+        if (inventorySlotId < 0) {
+            return;
+        }
 
-        if (slotId() >= 0 && slotId() < handler.slots.size()) {
-            ItemStack itemStack = handler.slots.get(slotId()).getStack();
-            SatchelContentsDataComponent component = itemStack.get(ModDataComponents.SATCHEL_CONTENTS);
+        ServerPlayerEntity serverPlayer = context.player();
+        ScreenHandler handler = serverPlayer.currentScreenHandler;
 
-            if (component != null) {
-                SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
-                builder.setSelectedSlotIndex(selectedSlotIndex());
-                itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-            }
+        // Handler has to exist. Cannot select satchel slot for an ItemStack outside the inventory slot array.
+        if (handler == null || inventorySlotId >= handler.slots.size()) {
+            return;
+        }
+
+        ItemStack itemStack = serverPlayer.getInventory().getStack(inventorySlotId);
+
+        if (itemStack.isEmpty()) {
+            return;
+        }
+
+        SatchelContentsDataComponent component = itemStack.get(ModDataComponents.SATCHEL_CONTENTS);
+
+        if (component != null) {
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
+            builder.setSelectedSlotIndex(satchelSlotIndex());
+            itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
         }
     }
 }

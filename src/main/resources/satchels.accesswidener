@@ -2,3 +2,4 @@ accessWidener v1 named
 
 accessible method net/minecraft/client/gui/screen/ingame/HandledScreen addTooltipSubmenuHandler (Lnet/minecraft/client/gui/tooltip/TooltipSubmenuHandler;)V
 accessible field net/minecraft/client/gui/screen/Screen client Lnet/minecraft/client/MinecraftClient;
+accessible field net/minecraft/client/gui/screen/ingame/HandledScreen focusedSlot Lnet/minecraft/screen/slot/Slot;

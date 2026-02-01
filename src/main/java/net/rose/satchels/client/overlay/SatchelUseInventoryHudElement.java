@@ -46,7 +46,7 @@ public class SatchelUseInventoryHudElement implements HudElement {
             return;
         }
 
-        // context.drawText(textRenderer, "Index: " + component.selectedSlotIndex(), 0, 0, 0xFFFFFFFF, true);
+        // context.drawText(textRenderer, "Index: " + component.satchelSlotIndex(), 0, 0, 0xFFFFFFFF, true);
 
         if (!component.isOpen() || itemStack.isEmpty()) {
             return;

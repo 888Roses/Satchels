@@ -3,6 +3,7 @@ package net.rose.satchels.mixin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.Scroller;
 
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -20,8 +21,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.rose.satchels.common.item.SatchelItem;
-
 @Mixin(Mouse.class)
 public abstract class MouseMixin {
     @Shadow
@@ -31,44 +30,50 @@ public abstract class MouseMixin {
     /// Handles scrolling through satchel slots.
     @Inject(method = "onMouseScroll", at = @At("HEAD"), cancellable = true)
     private void satchels$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo callbackInfo) {
-        ClientPlayerEntity player = client.player;
+        if (window != client.getWindow().getHandle()) return;
 
-        if (window != client.getWindow().getHandle() || player == null || player.isSpectator()) {
+        ClientPlayerEntity player = client.player;
+        if (player == null || player.isSpectator()) {
             return;
         }
 
         PlayerInventory inventory = player.getInventory();
         ItemStack selectedStack = inventory.getSelectedStack();
+
         if (selectedStack == null || selectedStack.isEmpty() || !selectedStack.isIn(ModItemTags.SATCHELS)) {
             return;
         }
 
         SatchelContentsDataComponent component = selectedStack.get(ModDataComponents.SATCHEL_CONTENTS);
-        if (component != null) {
-            if (component.stacks().isEmpty() || !component.isOpen()) {
-                return;
-            }
+        if (component == null) return;
 
-            client.getInactivityFpsLimiter().onInput();
-
-            Boolean isDiscrete = client.options.getDiscreteMouseScroll().getValue();
-            Double mouseScrollAmount = client.options.getMouseWheelSensitivity().getValue();
-            double horizontalAmount = (isDiscrete ? Math.signum(horizontal) : horizontal) * mouseScrollAmount;
-            double verticalAmount = (isDiscrete ? Math.signum(vertical) : vertical) * mouseScrollAmount;
-            double scrollAmount = verticalAmount == 0 ? -horizontalAmount : verticalAmount;
-
-            if (scrollAmount != 0) {
-                int selectedIndex = Scroller.scrollCycling(scrollAmount, component.selectedSlotIndex(), component.stacks().size());
-
-                component = new SatchelContentsDataComponent.Builder(component).setSelectedSlotIndex(selectedIndex).build();
-                selectedStack.set(ModDataComponents.SATCHEL_CONTENTS, component);
-                inventory.setStack(inventory.getSelectedSlot(), selectedStack);
-
-                ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(inventory.getSelectedSlot(), selectedIndex));
-
-                SatchelsClient.playScrollSound();
-                callbackInfo.cancel();
-            }
+        if (component.stacks().isEmpty() || !component.isOpen()) {
+            return;
         }
+
+        client.getInactivityFpsLimiter().onInput();
+
+        Boolean isDiscrete = client.options.getDiscreteMouseScroll().getValue();
+        Double mouseScrollAmount = client.options.getMouseWheelSensitivity().getValue();
+        double horizontalAmount = (isDiscrete ? Math.signum(horizontal) : horizontal) * mouseScrollAmount;
+        double verticalAmount = (isDiscrete ? Math.signum(vertical) : vertical) * mouseScrollAmount;
+        double speed = verticalAmount == 0 ? -horizontalAmount : verticalAmount;
+
+        if (speed == 0) {
+            return;
+        }
+
+        int satchelSlotIndex = Scroller.scrollCycling(speed, component.selectedSlotIndex(), component.stacks().size());
+
+        SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
+        builder.setSelectedSlotIndex(satchelSlotIndex);
+        selectedStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+
+        // inventory.setStack(inventory.getSelectedSlot(), selectedStack);
+
+        ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(inventory.getSelectedSlot(), satchelSlotIndex));
+        SatchelsClient.playScrollSound();
+
+        callbackInfo.cancel();
     }
 }

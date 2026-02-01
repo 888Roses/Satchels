@@ -24,7 +24,7 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedS
             .create(instance -> instance
                     .group(
                             ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(SatchelContentsDataComponent::stacks),
-                            Codec.INT.fieldOf("selectedSlotIndex").forGetter(SatchelContentsDataComponent::selectedSlotIndex),
+                            Codec.INT.fieldOf("satchelSlotIndex").forGetter(SatchelContentsDataComponent::selectedSlotIndex),
                             Codec.INT.fieldOf("previousSelectedSlotIndex").forGetter(SatchelContentsDataComponent::previousSelectedSlotIndex),
                             Codec.BOOL.fieldOf("isOpen").forGetter(SatchelContentsDataComponent::isOpen)
                     )
