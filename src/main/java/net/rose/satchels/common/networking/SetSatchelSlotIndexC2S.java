@@ -28,7 +28,7 @@ public record SetSatchelSlotIndexC2S(int slotId, int selectedSlotIndex) implemen
 
     public void receive(ServerPlayNetworking.Context context) {
         ScreenHandler handler = context.player().currentScreenHandler;
-        context.player().sendMessage(Text.literal("SERVER slot: " + slotId + " selected: " + selectedSlotIndex));
+        // context.player().sendMessage(Text.literal("SERVER slot: " + slotId + " selected: " + selectedSlotIndex));
 
         if (slotId() >= 0 && slotId() < handler.slots.size()) {
             ItemStack itemStack = handler.slots.get(slotId()).getStack();

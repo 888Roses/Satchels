@@ -63,7 +63,7 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
         }
 
         if (component.selectedSlotIndex() != selectedItemIndex) {
-            Satchels.LOGGER.info("UwU " + component.selectedSlotIndex() + " != " + selectedItemIndex);
+            // Satchels.LOGGER.info("UwU " + component.selectedSlotIndex() + " != " + selectedItemIndex);
 
             var builder = new SatchelContentsDataComponent.Builder(component);
             builder.setSelectedSlotIndex(selectedItemIndex);

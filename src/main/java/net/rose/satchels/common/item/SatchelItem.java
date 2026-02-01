@@ -165,7 +165,7 @@ public class SatchelItem extends Item {
 
         if (clickType == ClickType.RIGHT) {
             SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
-            user.sendMessage(Text.literal("Selected Slot Index: " + builder.selectedSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
+            // user.sendMessage(Text.literal("Selected Slot Index: " + builder.selectedSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
             Optional<ItemStack> removed = builder.removeCurrent();
             if (removed.isPresent()) {
                 cursorStackReference.set(removed.get().copy());
@@ -240,7 +240,7 @@ public class SatchelItem extends Item {
 
             if (!builder.isOpen()) {
                 Optional<ItemStack> removed = builder.removeCurrent();
-                user.sendMessage(Text.literal("Selected Slot Index: " + builder.selectedSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
+                // user.sendMessage(Text.literal("Selected Slot Index: " + builder.selectedSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
                 if (removed.isPresent()) {
                     user.giveOrDropStack(removed.get().copy());
 
