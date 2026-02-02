@@ -1,18 +1,20 @@
 package net.rose.satchels.common;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 
+import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.entry.LootPoolEntry;
+import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.util.Identifier;
 
-import net.rose.satchels.common.init.ModDataComponents;
-import net.rose.satchels.common.init.ModItemTags;
-import net.rose.satchels.common.init.ModItems;
+import net.rose.satchels.common.init.*;
 import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,8 @@ public class Satchels implements ModInitializer {
         ModItems.initialize();
         ModItemTags.initialize();
         ModDataComponents.initialize();
+        ModContainerComponentModifiers.initialize();
+        ModLootTables.initialize();
 
         PayloadTypeRegistry.playC2S().register(SetSatchelSlotIndexC2S.ID, SetSatchelSlotIndexC2S.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(SetSatchelSlotIndexC2S.ID, SetSatchelSlotIndexC2S::receive);
@@ -58,6 +62,13 @@ public class Satchels implements ModInitializer {
                     ModItems.GREEN_DECREPIT_SATCHEL,
                     ModItems.PURPLE_DECREPIT_SATCHEL
             );
+        });
+
+        LootTableEvents.MODIFY.register((registryKey, builder, lootTableSource, wrapperLookup) -> {
+            if (lootTableSource.isBuiltin() && registryKey.equals(LootTables.ABANDONED_MINESHAFT_CHEST)) {
+                LootPool.Builder pool = LootPool.builder().with(LootTableEntry.builder(ModLootTables.DECREPIT_SATCHELS));
+                builder.pool(pool);
+            }
         });
     }
 }

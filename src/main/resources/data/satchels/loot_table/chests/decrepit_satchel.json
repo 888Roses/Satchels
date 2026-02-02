@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "satchels:decrepit_satchels/get_random",
+          "functions": [
+            {
+              "function": "minecraft:set_contents",
+              "component": "satchels:satchel_content",
+              "entries": [
+                {
+                  "type": "minecraft:loot_table",
+                  "value": "satchels:decrepit_satchels/fill"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.7
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

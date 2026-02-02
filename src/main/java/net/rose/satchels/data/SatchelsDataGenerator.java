@@ -11,5 +11,6 @@ public class SatchelsDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(LangProvider::new);
         pack.addProvider(ModelProvider::new);
         pack.addProvider(ItemTagProvider::new);
+        pack.addProvider(LootTableProvider::new);
     }
 }

@@ -4,6 +4,7 @@
   "package": "net.rose.satchels.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ContainerComponentModifierMixin"
   ],
   "client": [
     "HandledScreenMixin",

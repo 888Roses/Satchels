@@ -16,7 +16,12 @@ import net.rose.satchels.common.item.SatchelItem;
 import java.util.*;
 
 public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedSlotIndex, int previousSelectedSlotIndex, boolean isOpen) implements TooltipData {
-    public static final SatchelContentsDataComponent DEFAULT = new SatchelContentsDataComponent(List.of(), 0, 0, false);
+    public static final SatchelContentsDataComponent DEFAULT = new SatchelContentsDataComponent(
+            List.of(),
+            -1,
+            -1,
+            false
+    );
     /// The maximum amount of item in a single stack stored in the satchel.
     public static final int MAX_STACK_SIZE = 16;
 
@@ -119,6 +124,14 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedS
 
         public SatchelContentsDataComponent build() {
             return new SatchelContentsDataComponent(List.of(this.stacks.toArray(ItemStack[]::new)), selectedSlotIndex, previousSelectedSlotIndex, isOpen);
+        }
+
+        public Builder clear() {
+            stacks.clear();
+            selectedSlotIndex = DEFAULT.selectedSlotIndex();
+            previousSelectedSlotIndex = DEFAULT.previousSelectedSlotIndex();
+            isOpen = DEFAULT.isOpen();
+            return this;
         }
     }
 }
