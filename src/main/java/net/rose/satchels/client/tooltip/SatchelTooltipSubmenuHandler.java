@@ -11,10 +11,12 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
+import net.rose.satchels.common.item.SatchelItem;
 import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -48,12 +50,25 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
             int satchelFillAmount = component.stacks().size();
             int satchelSlotIndex = Scroller.scrollCycling(speed, currentSatchelSlotIndex, satchelFillAmount);
 
-            Screen screen = MinecraftClient.getInstance().currentScreen;
+            MinecraftClient client = MinecraftClient.getInstance();
+
+            Screen screen = client.currentScreen;
+
             if (!(screen instanceof HandledScreen<?> handledScreen)) {
+                client.player.sendMessage(Text.literal("Screen is not a handled screen! Please report this exact message in the discord! " + screen).formatted(Formatting.RED), false);
                 return false;
             }
 
-            ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(handledScreen.focusedSlot.getIndex(), satchelSlotIndex));
+            Slot focusedSlot = handledScreen.focusedSlot;
+            if (focusedSlot == null) {
+                return false;
+            }
+
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
+            builder.setSelectedSlotIndex(satchelSlotIndex);
+            itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+
+            ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(focusedSlot.getIndex(), satchelSlotIndex));
         }
 
         return true;
