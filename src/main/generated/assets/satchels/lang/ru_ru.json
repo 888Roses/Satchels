@@ -1,0 +1,25 @@
+{
+  "item.satchels.black_satchel": "Чёрная сумка",
+  "item.satchels.blue_satchel": "Синяя сумка",
+  "item.satchels.brown_decrepit_satchel": "Изношенная коричневая сумка",
+  "item.satchels.brown_satchel": "Коричневая сумка",
+  "item.satchels.cyan_satchel": "Бирюзовая сумка",
+  "item.satchels.gray_satchel": "Серая сумка",
+  "item.satchels.green_decrepit_satchel": "Изношенная зелёная сумка",
+  "item.satchels.green_satchel": "Зелёная сумка",
+  "item.satchels.light_blue_satchel": "Голубая сумка",
+  "item.satchels.light_gray_satchel": "Светло-серая сумка",
+  "item.satchels.lime_satchel": "Лаймовая сумка",
+  "item.satchels.magenta_satchel": "Пурпурная сумка",
+  "item.satchels.orange_satchel": "Оранжевая сумка",
+  "item.satchels.pink_satchel": "Розовая сумка",
+  "item.satchels.purple_decrepit_satchel": "Изношенная фиолетовая сумка",
+  "item.satchels.purple_satchel": "Фиолетовая сумка",
+  "item.satchels.red_satchel": "Красная сумка",
+  "item.satchels.satchel": "Сумка",
+  "item.satchels.satchel.desc": "Вмещает стопку разных предметов",
+  "item.satchels.white_satchel": "Белая сумка",
+  "item.satchels.yellow_satchel": "Жёлтая сумка",
+
+  "modmenu.descriptionTranslation.satchels": "Простой ванильный мод, добавляющий сумки, которые могут вмещать до 3 предметов."
+}
