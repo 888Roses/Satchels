@@ -3,7 +3,7 @@
   "id": "satchels",
   "version": "${version}",
   "name": "Satchels",
-  "description": "",
+  "description": "Simple vanilla friendly mod that adds Satchels that can hold up to 3 items total.",
   "authors": ["Rosenoire", "Elysieon"],
   "contact": {},
   "license": "All-Rights-Reserved",
