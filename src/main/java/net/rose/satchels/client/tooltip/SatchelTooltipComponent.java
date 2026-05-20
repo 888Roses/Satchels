@@ -2,7 +2,7 @@ package net.rose.satchels.client.tooltip;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -51,8 +51,8 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
     }
 
     @Override
-    public void renderImage(Font textRenderer, int x, int y, int width, int height, GuiGraphics drawContext) {
-        drawContext.drawWordWrap(textRenderer, DESCRIPTION_TEXT, x, y, MAX_WIDTH, 0xFFFFFFFF, true);
+    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor drawContext) {
+        drawContext.textWithWordWrap(textRenderer, DESCRIPTION_TEXT, x, y, MAX_WIDTH, 0xFFFFFFFF, true);
 
         int slotIndex = data.selectedSlotIndex();
         // drawContext.drawWrappedText(textRenderer, Text.literal("Index: " + slotIndex), x, y, MAX_WIDTH, 0xFFFFFFFF, true);
@@ -62,7 +62,7 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
             int i = textRenderer.width(text.getVisualOrderText());
             int j = x + width / 2 - 12;
             ClientTooltipComponent tooltipComponent = ClientTooltipComponent.create(text.getVisualOrderText());
-            drawContext.renderTooltip(textRenderer, List.of(tooltipComponent), j - i / 2, y - 16 - 2, DefaultTooltipPositioner.INSTANCE, itemStack.get(DataComponents.TOOLTIP_STYLE));
+            drawContext.tooltip(textRenderer, List.of(tooltipComponent), j - i / 2, y - 16 - 2, DefaultTooltipPositioner.INSTANCE, itemStack.get(DataComponents.TOOLTIP_STYLE));
         }
 
         int descriptionHeight = getDescriptionHeight(textRenderer);
@@ -82,7 +82,7 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
         this.drawProgressBar(x, y, textRenderer, drawContext);
     }
 
-    public static void drawItem(SatchelContentsDataComponent data, int index, int x, int y, List<ItemStack> stacks, int seed, Font textRenderer, GuiGraphics drawContext) {
+    public static void drawItem(SatchelContentsDataComponent data, int index, int x, int y, List<ItemStack> stacks, int seed, Font textRenderer, GuiGraphicsExtractor drawContext) {
         int slotIndex = index - 1;
         boolean isSlotSelected = slotIndex == data.selectedSlotIndex();
         ItemStack itemStack = stacks.get(slotIndex);
@@ -90,20 +90,20 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
         Identifier slotTexture = isSlotSelected ? BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE : BUNDLE_SLOT_BACKGROUND_TEXTURE;
         drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, slotTexture, x, y, 24, 24);
 
-        drawContext.renderItem(itemStack, x + 4, y + 4, seed);
-        drawContext.renderItemDecorations(textRenderer, itemStack, x + 4, y + 4);
+        drawContext.item(itemStack, x + 4, y + 4, seed);
+        drawContext.itemDecorations(textRenderer, itemStack, x + 4, y + 4);
 
         if (isSlotSelected) {
             drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, BUNDLE_SLOT_HIGHLIGHT_FRONT_TEXTURE, x, y, 24, 24);
         }
     }
 
-    private void drawProgressBar(int x, int y, Font textRenderer, GuiGraphics drawContext) {
+    private void drawProgressBar(int x, int y, Font textRenderer, GuiGraphicsExtractor drawContext) {
         drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, this.getProgressBarFillTexture(), x + 1, y, this.getProgressBarFill(), FILL_BAR_HEIGHT);
         drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESS_BAR_BORDER_TEXTURE, x, y, FILL_BAR_WIDTH, FILL_BAR_HEIGHT);
 
         this.getProgressBarLabel().ifPresent(text ->
-                drawContext.drawCenteredString(textRenderer, text, x + FILL_BAR_WIDTH / 2, y + 3, CommonColors.WHITE)
+                drawContext.centeredText(textRenderer, text, x + FILL_BAR_WIDTH / 2, y + 3, CommonColors.WHITE)
         );
     }
 

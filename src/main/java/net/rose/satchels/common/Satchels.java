@@ -1,8 +1,7 @@
 package net.rose.satchels.common;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -33,11 +32,11 @@ public class Satchels implements ModInitializer {
         ModContainerComponentModifiers.initialize();
         ModLootTables.initialize();
 
-        PayloadTypeRegistry.playC2S().register(SetSatchelSlotIndexC2S.ID, SetSatchelSlotIndexC2S.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(SetSatchelSlotIndexC2S.ID, SetSatchelSlotIndexC2S.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(SetSatchelSlotIndexC2S.ID, SetSatchelSlotIndexC2S::receive);
 
-        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(fabricItemGroupEntries -> {
-            fabricItemGroupEntries.addAfter(
+        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(fabricItemGroupEntries -> {
+            fabricItemGroupEntries.insertAfter(
                     Items.PINK_BUNDLE,
                     ModItems.SATCHEL,
                     ModItems.WHITE_SATCHEL,

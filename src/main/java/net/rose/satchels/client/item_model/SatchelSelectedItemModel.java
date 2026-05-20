@@ -16,6 +16,7 @@ import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4fc;
 
 @Environment(EnvType.CLIENT)
 public class SatchelSelectedItemModel implements ItemModel {
@@ -41,7 +42,8 @@ public class SatchelSelectedItemModel implements ItemModel {
             return CODEC;
         }
 
-        public ItemModel bake(ItemModel.BakingContext context) {
+        @Override
+        public ItemModel bake(BakingContext context, Matrix4fc transformation) {
             return INSTANCE;
         }
 

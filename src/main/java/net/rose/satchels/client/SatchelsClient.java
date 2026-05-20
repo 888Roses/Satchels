@@ -1,9 +1,8 @@
 package net.rose.satchels.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 
+import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -22,7 +21,7 @@ import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 public class SatchelsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        TooltipComponentCallback.EVENT.register(tooltipData -> {
+        ClientTooltipComponentCallback.EVENT.register(tooltipData -> {
             if (tooltipData instanceof SatchelContentsDataComponent data) return new SatchelTooltipComponent(data);
             return null;
         });

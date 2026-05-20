@@ -23,10 +23,10 @@
   "mixins": [
     "satchels.mixins.json"
   ],
-  "accessWidener": "satchels.accesswidener",
+  "accessWidener": "satchels.classtweaker",
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": "${minecraft_version}"
   }
 }

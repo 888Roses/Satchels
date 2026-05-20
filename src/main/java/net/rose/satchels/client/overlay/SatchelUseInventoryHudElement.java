@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class SatchelUseInventoryHudElement implements HudElement {
     @Override
-    public void render(@NonNull GuiGraphics context, @NonNull DeltaTracker tickCounter) {
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer clientPlayer = client.player;
         Font textRenderer = client.font;
@@ -39,7 +39,7 @@ public class SatchelUseInventoryHudElement implements HudElement {
         }
 
         SatchelContentsDataComponent component = SatchelItem.getSatchelDataComponent(itemStack);
-        
+
         if (component == null) {
             return;
         }
@@ -50,8 +50,8 @@ public class SatchelUseInventoryHudElement implements HudElement {
             return;
         }
 
-        int x = context.guiWidth() / 2;
-        int y = context.guiHeight() - 48;
+        int x = graphics.guiWidth() / 2;
+        int y = graphics.guiHeight() - 48;
 
         if (!component.stacks().isEmpty()) {
             int seed = 1;
@@ -62,7 +62,7 @@ public class SatchelUseInventoryHudElement implements HudElement {
                 SatchelTooltipComponent.drawItem(
                         component,
                         seed, x - 2 + i * 20, y,
-                        component.stacks(), seed, Minecraft.getInstance().font, context
+                        component.stacks(), seed, Minecraft.getInstance().font, graphics
                 );
 
                 seed++;
@@ -88,10 +88,10 @@ public class SatchelUseInventoryHudElement implements HudElement {
                     tooltipHeight += tooltipComponent.getHeight(textRenderer);
                 }
 
-                context.renderTooltip(
+                graphics.tooltip(
                         textRenderer, allComponents,
-                        context.guiWidth() / 2 - componentWidth / 2 - 12,
-                        context.guiHeight() - 42 - tooltipHeight,
+                        graphics.guiWidth() / 2 - componentWidth / 2 - 12,
+                        graphics.guiHeight() - 42 - tooltipHeight,
                         DefaultTooltipPositioner.INSTANCE, selectedItemStack.get(DataComponents.TOOLTIP_STYLE)
                 );
             }

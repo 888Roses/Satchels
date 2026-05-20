@@ -8,7 +8,7 @@ import net.minecraft.client.gui.ItemSlotMouseAction;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.rose.satchels.client.SatchelsClient;
@@ -54,7 +54,7 @@ public class SatchelTooltipSubmenuHandler implements ItemSlotMouseAction {
             Screen screen = client.screen;
 
             if (!(screen instanceof AbstractContainerScreen<?> handledScreen)) {
-                client.player.displayClientMessage(Component.literal("Screen is not a handled screen! Please report this exact message in the discord! " + screen).withStyle(ChatFormatting.RED), false);
+                client.player.sendSystemMessage(Component.literal("Screen is not a handled screen! Please report this exact message in the discord! " + screen).withStyle(ChatFormatting.RED));
                 return false;
             }
 
@@ -76,6 +76,13 @@ public class SatchelTooltipSubmenuHandler implements ItemSlotMouseAction {
     @Override
     public void onStopHovering(Slot slot) {
         setSlot(slot);
+    }
+
+    @Override
+    public void onSlotClicked(Slot slot, ContainerInput containerInput) {
+        if (containerInput == ContainerInput.QUICK_MOVE || containerInput == ContainerInput.SWAP) {
+            setSlot(slot);
+        }
     }
 
     private void setSlot(Slot slot) {
@@ -103,9 +110,4 @@ public class SatchelTooltipSubmenuHandler implements ItemSlotMouseAction {
         return itemStack;
     }
 
-    public void onSlotClicked(Slot slot, ClickType actionType) {
-        if (actionType == ClickType.QUICK_MOVE || actionType == ClickType.SWAP) {
-            setSlot(slot);
-        }
-    }
 }

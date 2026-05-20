@@ -1,6 +1,6 @@
 package net.rose.satchels.data;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.core.HolderLookup;
 import net.rose.satchels.common.init.ModItems;
@@ -8,8 +8,8 @@ import net.rose.satchels.common.init.ModItems;
 import java.util.concurrent.CompletableFuture;
 
 public class LangProvider extends FabricLanguageProvider {
-    public LangProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
-        super(dataOutput, registryLookup);
+    public LangProvider(FabricPackOutput fabricPackOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(fabricPackOutput, registryLookup);
     }
 
     @Override

@@ -1,8 +1,7 @@
 package net.rose.satchels.data;
 
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.*;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -12,6 +11,7 @@ import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.properties.select.DisplayContext;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -20,7 +20,7 @@ import net.rose.satchels.client.item_model.SatchelSelectedItemModel;
 import net.rose.satchels.common.init.ModItems;
 
 public class ModelProvider extends FabricModelProvider {
-    public ModelProvider(FabricDataOutput output) {
+    public ModelProvider(FabricPackOutput output) {
         super(output);
     }
 
@@ -62,7 +62,7 @@ public class ModelProvider extends FabricModelProvider {
     }
 
     private Identifier uploadOpenSatchelModel(ItemModelGenerators itemModelGenerator, Item item, ModelTemplate model, String textureSuffix) {
-        Identifier identifier = TextureMapping.getItemTexture(item, textureSuffix);
-        return model.create(item, TextureMapping.layer0(identifier), itemModelGenerator.modelOutput);
+        Material material = TextureMapping.getItemTexture(item, textureSuffix);
+        return model.create(item, TextureMapping.layer0(material), itemModelGenerator.modelOutput);
     }
 }

@@ -1,5 +1,0 @@
-classTweaker v1 named
-
-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
-accessible method net/minecraft/client/gui/screens/inventory/AbstractContainerScreen addItemSlotMouseAction (Lnet/minecraft/client/gui/ItemSlotMouseAction;)V
-accessible field net/minecraft/client/gui/screens/Screen minecraft Lnet/minecraft/client/Minecraft;
