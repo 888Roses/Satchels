@@ -1,24 +1,23 @@
 package net.rose.satchels.common.init;
 
-import net.minecraft.component.ComponentType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.rose.satchels.common.Satchels;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 
 public interface ModDataComponents {
-    ComponentType<SatchelContentsDataComponent> SATCHEL_CONTENTS = register(
-            Registries.DATA_COMPONENT_TYPE, "satchel_content", ComponentType
+    DataComponentType<SatchelContentsDataComponent> SATCHEL_CONTENTS = register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE, "satchel_content", DataComponentType
                     .<SatchelContentsDataComponent>builder()
-                    .codec(SatchelContentsDataComponent.CODEC)
-                    .packetCodec(SatchelContentsDataComponent.PACKET_CODEC)
+                    .persistent(SatchelContentsDataComponent.CODEC)
+                    .networkSynchronized(SatchelContentsDataComponent.PACKET_CODEC)
                     .build()
     );
 
     static <V, T extends V> T register(Registry<V> registry, String id, T entry) {
-        return Registry.register(registry, RegistryKey.of(registry.getKey(), Satchels.id(id)), entry);
+        return Registry.register(registry, ResourceKey.create(registry.key(), Satchels.id(id)), entry);
     }
 
     static void initialize() {

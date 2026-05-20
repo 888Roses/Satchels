@@ -2,26 +2,23 @@ package net.rose.satchels.common.item;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.StackReference;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipData;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ClickType;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 
@@ -33,7 +30,7 @@ import java.util.Optional;
 public class SatchelItem extends Item {
     public static final int MAX_ITEM_COUNT = 3;
 
-    public SatchelItem(Settings settings) {
+    public SatchelItem(Properties settings) {
         super(settings);
     }
 
@@ -41,7 +38,7 @@ public class SatchelItem extends Item {
 
     /// Gets the [SatchelContentsDataComponent] attached to this [ItemStack].
     public static @Nullable SatchelContentsDataComponent getSatchelDataComponent(ItemStack itemStack) {
-        return itemStack.contains(ModDataComponents.SATCHEL_CONTENTS) ? itemStack.get(ModDataComponents.SATCHEL_CONTENTS) : null;
+        return itemStack.has(ModDataComponents.SATCHEL_CONTENTS) ? itemStack.get(ModDataComponents.SATCHEL_CONTENTS) : null;
     }
 
     /// Gets and returns the amount of item stored in this satchel [ItemStack].
@@ -50,10 +47,10 @@ public class SatchelItem extends Item {
         return component == null ? 0 : component.stacks().size();
     }
 
-    private static void refreshScreenHandler(PlayerEntity user) {
-        ScreenHandler screenHandler = user.currentScreenHandler;
+    private static void refreshScreenHandler(Player user) {
+        AbstractContainerMenu screenHandler = user.containerMenu;
         if (screenHandler != null) {
-            screenHandler.onContentChanged(user.getInventory());
+            screenHandler.slotsChanged(user.getInventory());
         }
     }
 
@@ -61,14 +58,14 @@ public class SatchelItem extends Item {
 
     // region Sounds
 
-    public static void playInsertSound(PlayerEntity user, boolean failed) {
-        SoundEvent soundEvent = failed ? SoundEvents.ITEM_BUNDLE_INSERT_FAIL : SoundEvents.ENTITY_HORSE_SADDLE.value();
-        user.playSound(soundEvent, 0.5F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
+    public static void playInsertSound(Player user, boolean failed) {
+        SoundEvent soundEvent = failed ? SoundEvents.BUNDLE_INSERT_FAIL : SoundEvents.HORSE_SADDLE.value();
+        user.playSound(soundEvent, 0.5F, Mth.nextFloat(user.getRandom(), 0.98F, 1.02F));
     }
 
-    public static void playRemoveSound(PlayerEntity user) {
-        float pitch = MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F);
-        user.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 0.75F, pitch);
+    public static void playRemoveSound(Player user) {
+        float pitch = Mth.nextFloat(user.getRandom(), 1.15F, 1.25F);
+        user.playSound(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 0.75F, pitch);
     }
 
     // endregion
@@ -76,7 +73,7 @@ public class SatchelItem extends Item {
     // region In Inventory Behavior
 
     @Override
-    public boolean onStackClicked(ItemStack itemStack, Slot slot, ClickType clickType, PlayerEntity user) {
+    public boolean overrideStackedOnOther(ItemStack itemStack, Slot slot, ClickAction clickType, Player user) {
         // When a satchel item is clicked using another stack.
 
         SatchelContentsDataComponent currentComponent = getSatchelDataComponent(itemStack);
@@ -84,10 +81,10 @@ public class SatchelItem extends Item {
             return false;
         }
 
-        ItemStack slotItemStack = slot.getStack();
+        ItemStack slotItemStack = slot.getItem();
 
         // Insert in satchel.
-        if (clickType == ClickType.LEFT) {
+        if (clickType == ClickAction.PRIMARY) {
             if (slotItemStack.isEmpty()) {
                 return false;
             }
@@ -96,7 +93,7 @@ public class SatchelItem extends Item {
             // The amount of items copied.
             int copiedStackSize = Math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, slotItemStack.getCount());
             if (builder.add(slotItemStack.copyWithCount(copiedStackSize))) {
-                slotItemStack.decrement(copiedStackSize);
+                slotItemStack.shrink(copiedStackSize);
 
                 builder.setSelectedSlotIndex(-1);
                 itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
@@ -112,12 +109,12 @@ public class SatchelItem extends Item {
         }
 
         // Extract from satchel.
-        if (slot.getStack().isEmpty()) {
+        if (slot.getItem().isEmpty()) {
             SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
             Optional<ItemStack> removed = builder.removeCurrent();
 
             if (removed.isPresent()) {
-                slot.setStack(removed.get().copy());
+                slot.setByPlayer(removed.get().copy());
 
                 builder.setSelectedSlotIndex(-1);
                 itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
@@ -134,7 +131,7 @@ public class SatchelItem extends Item {
     }
 
     @Override
-    public boolean onClicked(ItemStack satchelItemStack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity user, StackReference cursorStackReference) {
+    public boolean overrideOtherStackedOnMe(ItemStack satchelItemStack, ItemStack otherStack, Slot slot, ClickAction clickType, Player user, SlotAccess cursorStackReference) {
         // When another stack is clicked using a satchel.
 
         SatchelContentsDataComponent currentComponent = getSatchelDataComponent(satchelItemStack);
@@ -149,7 +146,7 @@ public class SatchelItem extends Item {
             // The amount of items copied.
             int copiedStackSize = Math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, itemStackInCursor.getCount());
             if (builder.add(itemStackInCursor.copyWithCount(copiedStackSize))) {
-                itemStackInCursor.decrement(copiedStackSize);
+                itemStackInCursor.shrink(copiedStackSize);
 
                 builder.setSelectedSlotIndex(-1);
                 satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
@@ -164,7 +161,7 @@ public class SatchelItem extends Item {
             return true;
         }
 
-        if (clickType == ClickType.RIGHT) {
+        if (clickType == ClickAction.SECONDARY) {
             SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
             // user.sendMessage(Text.literal("Selected Slot Index: " + builder.satchelSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
             Optional<ItemStack> removed = builder.removeCurrent();
@@ -191,7 +188,7 @@ public class SatchelItem extends Item {
     // region Tooltip
 
     @Override
-    public Optional<TooltipData> getTooltipData(ItemStack itemStack) {
+    public Optional<TooltipComponent> getTooltipImage(ItemStack itemStack) {
         return Optional.ofNullable(getSatchelDataComponent(itemStack));
     }
 
@@ -200,12 +197,12 @@ public class SatchelItem extends Item {
     // region Item Bar
 
     @Override
-    public boolean isItemBarVisible(ItemStack itemStack) {
+    public boolean isBarVisible(ItemStack itemStack) {
         return getStoredItemStackCount(itemStack) > 0;
     }
 
     @Override
-    public int getItemBarStep(ItemStack itemStack) {
+    public int getBarWidth(ItemStack itemStack) {
         SatchelContentsDataComponent component = getSatchelDataComponent(itemStack);
         if (component == null) return 0;
 
@@ -213,7 +210,7 @@ public class SatchelItem extends Item {
     }
 
     @Override
-    public int getItemBarColor(ItemStack itemStack) {
+    public int getBarColor(ItemStack itemStack) {
         SatchelContentsDataComponent component = getSatchelDataComponent(itemStack);
         return component == null ? 0x373737 : component.getOccupancy() < 1F ? 0x5555FF : 0xFF5555;
     }
@@ -226,12 +223,12 @@ public class SatchelItem extends Item {
     // public static ItemStack inspectedItemStack;
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (hand != Hand.MAIN_HAND) {
-            return ActionResult.PASS;
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+        if (hand != InteractionHand.MAIN_HAND) {
+            return InteractionResult.PASS;
         }
 
-        ItemStack satchelItemStack = user.getStackInHand(hand);
+        ItemStack satchelItemStack = user.getItemInHand(hand);
         SatchelContentsDataComponent currentComponent = getSatchelDataComponent(satchelItemStack);
 
         if (currentComponent != null) {
@@ -243,40 +240,40 @@ public class SatchelItem extends Item {
                 Optional<ItemStack> removed = builder.removeCurrent();
                 // user.sendMessage(Text.literal("Selected Slot Index: " + builder.satchelSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
                 if (removed.isPresent()) {
-                    user.giveOrDropStack(removed.get().copy());
+                    user.handleExtraItemsCreatedOnUse(removed.get().copy());
 
                     builder.setSelectedSlotIndex(-1);
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-                    user.setStackInHand(hand, satchelItemStack);
+                    user.setItemInHand(hand, satchelItemStack);
 
                     refreshScreenHandler(user);
-                    user.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 0.75F, MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F));
+                    user.playSound(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 0.75F, Mth.nextFloat(user.getRandom(), 1.15F, 1.25F));
 
-                    return ActionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
 
                 satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-                return ActionResult.FAIL;
+                return InteractionResult.FAIL;
             }
 
             // builder.setSelectedSlotIndex(0);
             satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-            user.setStackInHand(hand, satchelItemStack);
+            user.setItemInHand(hand, satchelItemStack);
 
             if (currentComponent.stacks().isEmpty()) {
-                return ActionResult.FAIL;
+                return InteractionResult.FAIL;
             }
 
-            user.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.9F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
+            user.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.9F, Mth.nextFloat(user.getRandom(), 0.98F, 1.02F));
 
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        return ActionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
         SatchelContentsDataComponent currentComponent = getSatchelDataComponent(stack);
 
         if (currentComponent != null) {

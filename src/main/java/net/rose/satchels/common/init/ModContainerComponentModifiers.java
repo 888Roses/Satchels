@@ -1,11 +1,10 @@
 package net.rose.satchels.common.init;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.component.ComponentType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.ContainerComponentModifier;
-import net.minecraft.loot.ContainerComponentModifiers;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.ContainerComponentManipulator;
+import net.minecraft.world.level.storage.loot.ContainerComponentManipulators;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 
 import java.util.Map;
@@ -14,36 +13,38 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface ModContainerComponentModifiers {
-    ContainerComponentModifier<SatchelContentsDataComponent> SATCHEL_CONTENTS = new ContainerComponentModifier<>() {
-        public ComponentType<SatchelContentsDataComponent> getComponentType() {
+    ContainerComponentManipulator<SatchelContentsDataComponent> SATCHEL_CONTENTS = new ContainerComponentManipulator<>() {
+        public DataComponentType<SatchelContentsDataComponent> type() {
             return ModDataComponents.SATCHEL_CONTENTS;
         }
 
-        public SatchelContentsDataComponent getDefault() {
+        public SatchelContentsDataComponent empty() {
             return SatchelContentsDataComponent.DEFAULT;
         }
 
-        public Stream<ItemStack> stream(SatchelContentsDataComponent bundleContentsComponent) {
-            return bundleContentsComponent.stacks().stream();
-        }
-
-        public SatchelContentsDataComponent apply(SatchelContentsDataComponent component, Stream<ItemStack> stream) {
+        @Override
+        public SatchelContentsDataComponent setContents(SatchelContentsDataComponent component, Stream<ItemStack> stream) {
             SatchelContentsDataComponent.Builder builder = (new SatchelContentsDataComponent.Builder(component)).clear();
             Objects.requireNonNull(builder);
             stream.forEach(builder::add);
             return builder.build();
         }
+
+        @Override
+        public Stream<ItemStack> getContents(SatchelContentsDataComponent component) {
+            return component.stacks().stream();
+        }
     };
 
-    Map<ComponentType<?>, ContainerComponentModifier<?>> TYPE_TO_MODIFIER = Stream
+    Map<DataComponentType<?>, ContainerComponentManipulator<?>> TYPE_TO_MODIFIER = Stream
             .of(
-                    ContainerComponentModifiers.CONTAINER,
-                    ContainerComponentModifiers.BUNDLE_CONTENTS,
-                    ContainerComponentModifiers.CHARGED_PROJECTILES,
+                    ContainerComponentManipulators.CONTAINER,
+                    ContainerComponentManipulators.BUNDLE_CONTENTS,
+                    ContainerComponentManipulators.CHARGED_PROJECTILES,
                     SATCHEL_CONTENTS
             )
             .collect(Collectors.toMap(
-                            ContainerComponentModifier::getComponentType,
+                            ContainerComponentManipulator::type,
                             (containerComponentModifier) -> containerComponentModifier
                     )
             );

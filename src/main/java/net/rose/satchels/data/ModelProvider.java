@@ -4,12 +4,17 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 
 import net.minecraft.client.data.*;
-
-import net.minecraft.client.render.item.model.ItemModel;
-import net.minecraft.client.render.item.property.select.DisplayContextProperty;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.properties.select.DisplayContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.rose.satchels.client.item_model.SatchelHasSelectedItemProperty;
 import net.rose.satchels.client.item_model.SatchelSelectedItemModel;
 import net.rose.satchels.common.init.ModItems;
@@ -20,11 +25,11 @@ public class ModelProvider extends FabricModelProvider {
     }
 
     @Override
-    public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
+    public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
     }
 
     @Override
-    public void generateItemModels(ItemModelGenerator itemModelGenerator) {
+    public void generateItemModels(ItemModelGenerators itemModelGenerator) {
         registerSatchel(itemModelGenerator, ModItems.SATCHEL);
         registerSatchel(itemModelGenerator, ModItems.WHITE_SATCHEL);
         registerSatchel(itemModelGenerator, ModItems.LIGHT_GRAY_SATCHEL);
@@ -47,17 +52,17 @@ public class ModelProvider extends FabricModelProvider {
         registerSatchel(itemModelGenerator, ModItems.PURPLE_DECREPIT_SATCHEL);
     }
 
-    private void registerSatchel(ItemModelGenerator itemModelGenerator, Item item) {
-        ItemModel.Unbaked generated = ItemModels.basic(itemModelGenerator.upload(item, Models.GENERATED));
-        Identifier openBackIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_BACK, "_back");
-        Identifier openFrontIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, Models.TEMPLATE_BUNDLE_OPEN_FRONT, "_front");
-        ItemModel.Unbaked selectedItemModel = ItemModels.composite(ItemModels.basic(openBackIdentifier), new SatchelSelectedItemModel.Unbaked(), ItemModels.basic(openFrontIdentifier));
-        ItemModel.Unbaked effectiveModel = ItemModels.condition(new SatchelHasSelectedItemProperty(), selectedItemModel, generated);
-        itemModelGenerator.output.accept(item, ItemModels.select(new DisplayContextProperty(), generated, ItemModels.switchCase(ItemDisplayContext.GUI, effectiveModel)));
+    private void registerSatchel(ItemModelGenerators itemModelGenerator, Item item) {
+        ItemModel.Unbaked generated = ItemModelUtils.plainModel(itemModelGenerator.createFlatItemModel(item, ModelTemplates.FLAT_ITEM));
+        Identifier openBackIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, ModelTemplates.BUNDLE_OPEN_BACK_INVENTORY, "_back");
+        Identifier openFrontIdentifier = uploadOpenSatchelModel(itemModelGenerator, item, ModelTemplates.BUNDLE_OPEN_FRONT_INVENTORY, "_front");
+        ItemModel.Unbaked selectedItemModel = ItemModelUtils.composite(ItemModelUtils.plainModel(openBackIdentifier), new SatchelSelectedItemModel.Unbaked(), ItemModelUtils.plainModel(openFrontIdentifier));
+        ItemModel.Unbaked effectiveModel = ItemModelUtils.conditional(new SatchelHasSelectedItemProperty(), selectedItemModel, generated);
+        itemModelGenerator.itemModelOutput.accept(item, ItemModelUtils.select(new DisplayContext(), generated, ItemModelUtils.when(ItemDisplayContext.GUI, effectiveModel)));
     }
 
-    private Identifier uploadOpenSatchelModel(ItemModelGenerator itemModelGenerator, Item item, Model model, String textureSuffix) {
-        Identifier identifier = TextureMap.getSubId(item, textureSuffix);
-        return model.upload(item, TextureMap.layer0(identifier), itemModelGenerator.modelCollector);
+    private Identifier uploadOpenSatchelModel(ItemModelGenerators itemModelGenerator, Item item, ModelTemplate model, String textureSuffix) {
+        Identifier identifier = TextureMapping.getItemTexture(item, textureSuffix);
+        return model.create(item, TextureMapping.layer0(identifier), itemModelGenerator.modelOutput);
     }
 }

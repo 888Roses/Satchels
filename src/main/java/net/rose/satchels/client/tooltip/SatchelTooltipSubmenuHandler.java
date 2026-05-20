@@ -1,17 +1,16 @@
 package net.rose.satchels.client.tooltip;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.tooltip.TooltipSubmenuHandler;
-import net.minecraft.client.input.Scroller;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.ScrollWheelHandler;
+import net.minecraft.client.gui.ItemSlotMouseAction;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
@@ -21,26 +20,26 @@ import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
-public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
-    private final Scroller scroller;
+public class SatchelTooltipSubmenuHandler implements ItemSlotMouseAction {
+    private final ScrollWheelHandler scroller;
 
-    public SatchelTooltipSubmenuHandler(MinecraftClient ignored) {
-        this.scroller = new Scroller();
+    public SatchelTooltipSubmenuHandler(Minecraft ignored) {
+        this.scroller = new ScrollWheelHandler();
     }
 
     @Override
-    public boolean isApplicableTo(Slot slot) {
-        return slot.getStack().isIn(ModItemTags.SATCHELS);
+    public boolean matches(Slot slot) {
+        return slot.getItem().is(ModItemTags.SATCHELS);
     }
 
-    public boolean onScroll(double horizontal, double vertical, int inventorySlotId, ItemStack itemStack) {
+    public boolean onMouseScrolled(double horizontal, double vertical, int inventorySlotId, ItemStack itemStack) {
         SatchelContentsDataComponent component = itemStack.get(ModDataComponents.SATCHEL_CONTENTS);
 
         if (component == null || component.stacks().isEmpty()) {
             return false;
         }
 
-        Vector2i scrollDelta = this.scroller.update(horizontal, vertical);
+        Vector2i scrollDelta = this.scroller.onMouseScroll(horizontal, vertical);
         int speed = scrollDelta.y == 0
                 ? -scrollDelta.x
                 : scrollDelta.y;
@@ -48,18 +47,18 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
         if (speed != 0) {
             int currentSatchelSlotIndex = component.selectedSlotIndex();
             int satchelFillAmount = component.stacks().size();
-            int satchelSlotIndex = Scroller.scrollCycling(speed, currentSatchelSlotIndex, satchelFillAmount);
+            int satchelSlotIndex = ScrollWheelHandler.getNextScrollWheelSelection(speed, currentSatchelSlotIndex, satchelFillAmount);
 
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
 
-            Screen screen = client.currentScreen;
+            Screen screen = client.screen;
 
-            if (!(screen instanceof HandledScreen<?> handledScreen)) {
-                client.player.sendMessage(Text.literal("Screen is not a handled screen! Please report this exact message in the discord! " + screen).formatted(Formatting.RED), false);
+            if (!(screen instanceof AbstractContainerScreen<?> handledScreen)) {
+                client.player.displayClientMessage(Component.literal("Screen is not a handled screen! Please report this exact message in the discord! " + screen).withStyle(ChatFormatting.RED), false);
                 return false;
             }
 
-            Slot focusedSlot = handledScreen.focusedSlot;
+            Slot focusedSlot = handledScreen.hoveredSlot;
             if (focusedSlot == null) {
                 return false;
             }
@@ -68,20 +67,20 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
             builder.setSelectedSlotIndex(satchelSlotIndex);
             itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
 
-            ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(focusedSlot.getIndex(), satchelSlotIndex));
+            ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(focusedSlot.getContainerSlot(), satchelSlotIndex));
         }
 
         return true;
     }
 
     @Override
-    public void reset(Slot slot) {
+    public void onStopHovering(Slot slot) {
         setSlot(slot);
     }
 
     private void setSlot(Slot slot) {
-        ItemStack itemStack = slot.getStack();
-        slot.setStack(setSlot(itemStack, itemStack.get(ModDataComponents.SATCHEL_CONTENTS), -1));
+        ItemStack itemStack = slot.getItem();
+        slot.setByPlayer(setSlot(itemStack, itemStack.get(ModDataComponents.SATCHEL_CONTENTS), -1));
     }
 
     private ItemStack setSlot(ItemStack itemStack, @Nullable SatchelContentsDataComponent component, int selectedItemIndex) {
@@ -104,8 +103,8 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
         return itemStack;
     }
 
-    public void onMouseClick(Slot slot, SlotActionType actionType) {
-        if (actionType == SlotActionType.QUICK_MOVE || actionType == SlotActionType.SWAP) {
+    public void onSlotClicked(Slot slot, ClickType actionType) {
+        if (actionType == ClickType.QUICK_MOVE || actionType == ClickType.SWAP) {
             setSlot(slot);
         }
     }

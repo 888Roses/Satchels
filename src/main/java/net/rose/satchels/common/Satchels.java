@@ -6,14 +6,12 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.Items;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.entry.LootPoolEntry;
-import net.minecraft.loot.entry.LootTableEntry;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.rose.satchels.common.init.*;
 import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 import org.slf4j.Logger;
@@ -24,7 +22,7 @@ public class Satchels implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static Identifier id(String path) {
-        return Identifier.of(MOD_ID, path);
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     @Override
@@ -38,7 +36,7 @@ public class Satchels implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(SetSatchelSlotIndexC2S.ID, SetSatchelSlotIndexC2S.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(SetSatchelSlotIndexC2S.ID, SetSatchelSlotIndexC2S::receive);
 
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(fabricItemGroupEntries -> {
+        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(fabricItemGroupEntries -> {
             fabricItemGroupEntries.addAfter(
                     Items.PINK_BUNDLE,
                     ModItems.SATCHEL,
@@ -65,9 +63,9 @@ public class Satchels implements ModInitializer {
         });
 
         LootTableEvents.MODIFY.register((registryKey, builder, lootTableSource, wrapperLookup) -> {
-            if (lootTableSource.isBuiltin() && registryKey.equals(LootTables.ABANDONED_MINESHAFT_CHEST)) {
-                LootPool.Builder pool = LootPool.builder().with(LootTableEntry.builder(ModLootTables.DECREPIT_SATCHELS));
-                builder.pool(pool);
+            if (lootTableSource.isBuiltin() && registryKey.equals(BuiltInLootTables.ABANDONED_MINESHAFT)) {
+                LootPool.Builder pool = LootPool.lootPool().add(NestedLootTable.lootTableReference(ModLootTables.DECREPIT_SATCHELS));
+                builder.withPool(pool);
             }
         });
     }

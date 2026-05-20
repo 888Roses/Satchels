@@ -1,9 +1,8 @@
 package net.rose.satchels.common.init;
 
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.rose.satchels.common.Satchels;
 
 public interface ModItemTags {
@@ -13,8 +12,8 @@ public interface ModItemTags {
     TagKey<Item> DECREPIT_SATCHELS = item("decrepit_satchels");
 
     private static TagKey<Item> item(String name) {
-        return TagKey.of(
-                Registries.ITEM.getKey(),
+        return TagKey.create(
+                BuiltInRegistries.ITEM.key(),
                 Satchels.id(name)
         );
     }

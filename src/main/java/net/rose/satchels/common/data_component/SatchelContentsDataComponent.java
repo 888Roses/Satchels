@@ -2,20 +2,18 @@ package net.rose.satchels.common.data_component;
 
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipData;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.math.MathHelper;
-
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
 
 import java.util.*;
 
-public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedSlotIndex, int previousSelectedSlotIndex, boolean isOpen) implements TooltipData {
+public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedSlotIndex, int previousSelectedSlotIndex, boolean isOpen) implements TooltipComponent {
     public static final SatchelContentsDataComponent DEFAULT = new SatchelContentsDataComponent(
             List.of(),
             -1,
@@ -36,18 +34,18 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedS
                     .apply(instance, SatchelContentsDataComponent::new)
             ));
 
-    public static final PacketCodec<RegistryByteBuf, SatchelContentsDataComponent> PACKET_CODEC = PacketCodec.of(
+    public static final StreamCodec<RegistryFriendlyByteBuf, SatchelContentsDataComponent> PACKET_CODEC = StreamCodec.ofMember(
             (value, buf) -> {
-                ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).encode(buf, value.stacks());
-                PacketCodecs.INTEGER.encode(buf, value.selectedSlotIndex());
-                PacketCodecs.INTEGER.encode(buf, value.previousSelectedSlotIndex());
-                PacketCodecs.BOOLEAN.encode(buf, value.isOpen());
+                ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buf, value.stacks());
+                ByteBufCodecs.INT.encode(buf, value.selectedSlotIndex());
+                ByteBufCodecs.INT.encode(buf, value.previousSelectedSlotIndex());
+                ByteBufCodecs.BOOL.encode(buf, value.isOpen());
             },
             buf -> new SatchelContentsDataComponent(
-                    ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).decode(buf),
-                    PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.BOOLEAN.decode(buf)
+                    ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf),
+                    ByteBufCodecs.INT.decode(buf),
+                    ByteBufCodecs.INT.decode(buf),
+                    ByteBufCodecs.BOOL.decode(buf)
             )
     );
 
@@ -97,7 +95,7 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedS
 
         /// Makes sure the given [ItemStack] can be inserted in the [#stacks] list.
         public boolean validate(ItemStack itemStack) {
-            return !itemStack.isEmpty() && this.stacks.size() < SatchelItem.MAX_ITEM_COUNT && !itemStack.isIn(ModItemTags.SATCHEL_EXCLUDED);
+            return !itemStack.isEmpty() && this.stacks.size() < SatchelItem.MAX_ITEM_COUNT && !itemStack.is(ModItemTags.SATCHEL_EXCLUDED);
         }
 
         /// Tries to add the given [ItemStack] in the [#stacks] list and returns whether it could be added or not.
@@ -116,7 +114,7 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedS
                 return Optional.empty();
             }
 
-            int clampedIndex = MathHelper.clamp(selectedSlotIndex, 0, this.stacks.size() - 1);
+            int clampedIndex = Mth.clamp(selectedSlotIndex, 0, this.stacks.size() - 1);
             ItemStack itemStack = this.stacks.get(clampedIndex).copy();
             this.stacks.remove(clampedIndex);
             return Optional.of(itemStack);

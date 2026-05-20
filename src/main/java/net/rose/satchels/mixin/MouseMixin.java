@@ -1,14 +1,12 @@
 package net.rose.satchels.mixin;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.Mouse;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.Scroller;
-
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.client.ScrollWheelHandler;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
@@ -21,26 +19,26 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Mouse.class)
+@Mixin(MouseHandler.class)
 public abstract class MouseMixin {
     @Shadow
     @Final
-    private MinecraftClient client;
+    private Minecraft minecraft;
 
     /// Handles scrolling through satchel slots.
-    @Inject(method = "onMouseScroll", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     private void satchels$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo callbackInfo) {
-        if (window != client.getWindow().getHandle()) return;
+        if (window != minecraft.getWindow().handle()) return;
 
-        ClientPlayerEntity player = client.player;
+        LocalPlayer player = minecraft.player;
         if (player == null || player.isSpectator()) {
             return;
         }
 
-        PlayerInventory inventory = player.getInventory();
-        ItemStack selectedStack = inventory.getSelectedStack();
+        Inventory inventory = player.getInventory();
+        ItemStack selectedStack = inventory.getSelectedItem();
 
-        if (selectedStack == null || selectedStack.isEmpty() || !selectedStack.isIn(ModItemTags.SATCHELS)) {
+        if (selectedStack == null || selectedStack.isEmpty() || !selectedStack.is(ModItemTags.SATCHELS)) {
             return;
         }
 
@@ -51,10 +49,10 @@ public abstract class MouseMixin {
             return;
         }
 
-        client.getInactivityFpsLimiter().onInput();
+        minecraft.getFramerateLimitTracker().onInputReceived();
 
-        Boolean isDiscrete = client.options.getDiscreteMouseScroll().getValue();
-        Double mouseScrollAmount = client.options.getMouseWheelSensitivity().getValue();
+        Boolean isDiscrete = minecraft.options.discreteMouseScroll().get();
+        Double mouseScrollAmount = minecraft.options.mouseWheelSensitivity().get();
         double horizontalAmount = (isDiscrete ? Math.signum(horizontal) : horizontal) * mouseScrollAmount;
         double verticalAmount = (isDiscrete ? Math.signum(vertical) : vertical) * mouseScrollAmount;
         double speed = verticalAmount == 0 ? -horizontalAmount : verticalAmount;
@@ -63,7 +61,7 @@ public abstract class MouseMixin {
             return;
         }
 
-        int satchelSlotIndex = Scroller.scrollCycling(speed, component.selectedSlotIndex(), component.stacks().size());
+        int satchelSlotIndex = ScrollWheelHandler.getNextScrollWheelSelection(speed, component.selectedSlotIndex(), component.stacks().size());
 
         SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
         builder.setSelectedSlotIndex(satchelSlotIndex);

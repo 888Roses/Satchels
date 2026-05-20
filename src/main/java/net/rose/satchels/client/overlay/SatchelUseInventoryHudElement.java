@@ -1,20 +1,18 @@
 package net.rose.satchels.client.overlay;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
-
+import net.minecraft.world.item.ItemStack;
 import net.rose.satchels.client.tooltip.SatchelTooltipComponent;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModItemTags;
@@ -25,18 +23,18 @@ import java.util.List;
 
 public class SatchelUseInventoryHudElement implements HudElement {
     @Override
-    public void render(@NonNull DrawContext context, @NonNull RenderTickCounter tickCounter) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        ClientPlayerEntity clientPlayer = client.player;
-        TextRenderer textRenderer = client.textRenderer;
+    public void render(@NonNull GuiGraphics context, @NonNull DeltaTracker tickCounter) {
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer clientPlayer = client.player;
+        Font textRenderer = client.font;
 
         if (clientPlayer == null || textRenderer == null) {
             return;
         }
 
-        ItemStack itemStack = clientPlayer.getInventory().getSelectedStack();
+        ItemStack itemStack = clientPlayer.getInventory().getSelectedItem();
 
-        if (itemStack == null || !itemStack.isIn(ModItemTags.SATCHELS)) {
+        if (itemStack == null || !itemStack.is(ModItemTags.SATCHELS)) {
             return;
         }
 
@@ -52,8 +50,8 @@ public class SatchelUseInventoryHudElement implements HudElement {
             return;
         }
 
-        int x = context.getScaledWindowWidth() / 2;
-        int y = context.getScaledWindowHeight() - 48;
+        int x = context.guiWidth() / 2;
+        int y = context.guiHeight() - 48;
 
         if (!component.stacks().isEmpty()) {
             int seed = 1;
@@ -64,7 +62,7 @@ public class SatchelUseInventoryHudElement implements HudElement {
                 SatchelTooltipComponent.drawItem(
                         component,
                         seed, x - 2 + i * 20, y,
-                        component.stacks(), seed, MinecraftClient.getInstance().textRenderer, context
+                        component.stacks(), seed, Minecraft.getInstance().font, context
                 );
 
                 seed++;
@@ -73,28 +71,28 @@ public class SatchelUseInventoryHudElement implements HudElement {
             if (component.selectedSlotIndex() >= 0 && component.selectedSlotIndex() < component.stacks().size()) {
                 ItemStack selectedItemStack = component.stacks().get(component.selectedSlotIndex());
 
-                List<TooltipComponent> allComponents = Screen
-                        .getTooltipFromItem(MinecraftClient.getInstance(), selectedItemStack)
+                List<ClientTooltipComponent> allComponents = Screen
+                        .getTooltipFromItem(Minecraft.getInstance(), selectedItemStack)
                         .stream()
-                        .map(Text::asOrderedText)
-                        .map(TooltipComponent::of)
-                        .collect(Util.toArrayList());
+                        .map(Component::getVisualOrderText)
+                        .map(ClientTooltipComponent::create)
+                        .collect(Util.toMutableList());
                 selectedItemStack
-                        .getTooltipData()
-                        .ifPresent(data -> allComponents.add(allComponents.isEmpty() ? 0 : 1, TooltipComponent.of(data)));
+                        .getTooltipImage()
+                        .ifPresent(data -> allComponents.add(allComponents.isEmpty() ? 0 : 1, ClientTooltipComponent.create(data)));
 
                 Integer componentWidth = allComponents.stream().map(c -> c.getWidth(textRenderer)).max(Integer::compareTo).orElse(2);
 
                 int tooltipHeight = 0;
-                for (TooltipComponent tooltipComponent : allComponents) {
+                for (ClientTooltipComponent tooltipComponent : allComponents) {
                     tooltipHeight += tooltipComponent.getHeight(textRenderer);
                 }
 
-                context.drawTooltipImmediately(
+                context.renderTooltip(
                         textRenderer, allComponents,
-                        context.getScaledWindowWidth() / 2 - componentWidth / 2 - 12,
-                        context.getScaledWindowHeight() - 42 - tooltipHeight,
-                        HoveredTooltipPositioner.INSTANCE, selectedItemStack.get(DataComponentTypes.TOOLTIP_STYLE)
+                        context.guiWidth() / 2 - componentWidth / 2 - 12,
+                        context.guiHeight() - 42 - tooltipHeight,
+                        DefaultTooltipPositioner.INSTANCE, selectedItemStack.get(DataComponents.TOOLTIP_STYLE)
                 );
             }
         }

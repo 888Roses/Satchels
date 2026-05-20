@@ -1,11 +1,10 @@
 package net.rose.satchels.mixin;
 
-import net.minecraft.client.MinecraftClient;
-
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.rose.satchels.client.SatchelsClient;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
@@ -16,32 +15,32 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public class MinecraftClientMixin {
     /// Handles pressing the hotbar inputs to swap between different satchel slots.
-    @Inject(method = "handleInputEvents", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "handleKeybinds", at = @At("HEAD"), cancellable = true)
     private void satchels$handleInputEvents(CallbackInfo callbackInfo) {
-        MinecraftClient client = (MinecraftClient) (Object) this;
-        ClientPlayerEntity player = client.player;
+        Minecraft client = (Minecraft) (Object) this;
+        LocalPlayer player = client.player;
 
         if (player == null || player.isSpectator()) {
             return;
         }
 
-        PlayerInventory inventory = player.getInventory();
-        ItemStack selectedStack = inventory.getSelectedStack();
-        if (selectedStack == null || selectedStack.isEmpty() || !selectedStack.isIn(ModItemTags.SATCHELS)) {
+        Inventory inventory = player.getInventory();
+        ItemStack selectedStack = inventory.getSelectedItem();
+        if (selectedStack == null || selectedStack.isEmpty() || !selectedStack.is(ModItemTags.SATCHELS)) {
             return;
         }
 
-        if (!selectedStack.isEmpty() && selectedStack.isIn(ModItemTags.SATCHELS)) {
+        if (!selectedStack.isEmpty() && selectedStack.is(ModItemTags.SATCHELS)) {
             SatchelContentsDataComponent component = selectedStack.get(ModDataComponents.SATCHEL_CONTENTS);
             if (component != null && !component.stacks().isEmpty() && component.isOpen()) {
-                KeyBinding[] hotbarKeys = client.options.hotbarKeys;
+                KeyMapping[] hotbarKeys = client.options.keyHotbarSlots;
                 boolean hotbarKeyWasPressed = false;
 
                 for (int i = 0; i < hotbarKeys.length; ++i) {
-                    if (hotbarKeys[i].wasPressed()) {
+                    if (hotbarKeys[i].consumeClick()) {
                         hotbarKeyWasPressed = true;
 
                         if (i >= component.stacks().size()) {
@@ -50,7 +49,7 @@ public class MinecraftClientMixin {
 
                         component = new SatchelContentsDataComponent.Builder(component).setSelectedSlotIndex(i).build();
                         selectedStack.set(ModDataComponents.SATCHEL_CONTENTS, component);
-                        inventory.setStack(inventory.getSelectedSlot(), selectedStack);
+                        inventory.setItem(inventory.getSelectedSlot(), selectedStack);
 
                         SatchelsClient.playScrollSound();
                     }

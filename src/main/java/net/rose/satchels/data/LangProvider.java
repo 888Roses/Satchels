@@ -2,20 +2,18 @@ package net.rose.satchels.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
-
-import net.minecraft.registry.RegistryWrapper;
-
+import net.minecraft.core.HolderLookup;
 import net.rose.satchels.common.init.ModItems;
 
 import java.util.concurrent.CompletableFuture;
 
 public class LangProvider extends FabricLanguageProvider {
-    public LangProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+    public LangProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(dataOutput, registryLookup);
     }
 
     @Override
-    public void generateTranslations(RegistryWrapper.WrapperLookup wrapperLookup, TranslationBuilder translationBuilder) {
+    public void generateTranslations(HolderLookup.Provider wrapperLookup, TranslationBuilder translationBuilder) {
         translationBuilder.add(ModItems.SATCHEL, "Satchel");
         translationBuilder.add(ModItems.WHITE_SATCHEL, "White Satchel");
         translationBuilder.add(ModItems.LIGHT_GRAY_SATCHEL, "Light Gray Satchel");

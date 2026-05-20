@@ -1,10 +1,9 @@
 package net.rose.satchels.common.init;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.rose.satchels.common.Satchels;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
@@ -40,15 +39,15 @@ public interface ModItems {
         return register(
                 identifier,
                 SatchelItem::new,
-                new Item.Settings()
-                        .maxCount(1)
+                new Item.Properties()
+                        .stacksTo(1)
                         .component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsDataComponent.DEFAULT)
         );
     }
 
-    static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {
-        RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, Satchels.id(name));
-        return Items.register(key, factory, settings);
+    static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties settings) {
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Satchels.id(name));
+        return Items.registerItem(key, factory, settings);
     }
 
     static void initialize() {
