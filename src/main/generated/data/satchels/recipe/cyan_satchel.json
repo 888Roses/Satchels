@@ -1,10 +1,10 @@
 {
   "type": "minecraft:crafting_transmute",
   "category": "equipment",
-  "group": "bundle_dye",
+  "group": "satchel_dye",
   "input": "#satchels:satchels",
-  "material": "minecraft:purple_dye",
+  "material": "minecraft:cyan_dye",
   "result": {
-    "id": "satchels:purple_satchel"
+    "id": "satchels:cyan_satchel"
   }
 }

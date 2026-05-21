@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.item.properties.conditional.ConditionalItem
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.rose.satchels.common.Satchels;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 import org.jetbrains.annotations.Nullable;

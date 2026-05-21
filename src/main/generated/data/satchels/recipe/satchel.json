@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "multi_bench",
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "l": "minecraft:leather",
+    "s": "minecraft:string"
+  },
+  "pattern": [
+    "is",
+    "ll"
+  ],
+  "result": {
+    "id": "satchels:satchel"
+  }
+}
