@@ -37,7 +37,7 @@ public class Satchels implements ModInitializer {
 
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(fabricItemGroupEntries -> {
             fabricItemGroupEntries.insertAfter(
-                    Items.PINK_BUNDLE,
+                    Items.DYED_BUNDLE.pink(),
                     ModItems.SATCHEL,
                     ModItems.WHITE_SATCHEL,
                     ModItems.LIGHT_GRAY_SATCHEL,

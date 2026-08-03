@@ -51,7 +51,7 @@ public class SatchelTooltipSubmenuHandler implements ItemSlotMouseAction {
 
             Minecraft client = Minecraft.getInstance();
 
-            Screen screen = client.screen;
+            Screen screen = client.gui.screen();
 
             if (!(screen instanceof AbstractContainerScreen<?> handledScreen)) {
                 client.player.sendSystemMessage(Component.literal("Screen is not a handled screen! Please report this exact message in the discord! " + screen).withStyle(ChatFormatting.RED));
