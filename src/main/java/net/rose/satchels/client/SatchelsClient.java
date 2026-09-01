@@ -31,12 +31,4 @@ public class SatchelsClient implements ClientModInitializer {
         ItemModels.ID_MAPPER.put(Satchels.id("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
         ConditionalItemModelProperties.ID_MAPPER.put(Satchels.id("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
     }
-
-    public static void playScrollSound() {
-        LocalPlayer clientPlayer = Minecraft.getInstance().player;
-        if (clientPlayer == null) return;
-
-        float pitch = Mth.nextFloat(clientPlayer.getRandom(), 1.95f, 2f);
-        clientPlayer.playSound(SoundEvents.BUBBLE_POP, 0.5f, pitch);
-    }
 }

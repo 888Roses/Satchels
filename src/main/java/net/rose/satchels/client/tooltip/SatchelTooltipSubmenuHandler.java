@@ -104,7 +104,6 @@ public class SatchelTooltipSubmenuHandler implements ItemSlotMouseAction {
 
             itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
 
-            SatchelsClient.playScrollSound();
         }
 
         return itemStack;

@@ -70,7 +70,6 @@ public abstract class MouseMixin {
         // inventory.setStack(inventory.getSelectedSlot(), selectedStack);
 
         ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(inventory.getSelectedSlot(), satchelSlotIndex));
-        SatchelsClient.playScrollSound();
 
         callbackInfo.cancel();
     }
