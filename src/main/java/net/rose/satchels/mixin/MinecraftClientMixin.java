@@ -50,8 +50,6 @@ public class MinecraftClientMixin {
                         component = new SatchelContentsDataComponent.Builder(component).setSelectedSlotIndex(i).build();
                         selectedStack.set(ModDataComponents.SATCHEL_CONTENTS, component);
                         inventory.setItem(inventory.getSelectedSlot(), selectedStack);
-
-                        SatchelsClient.playScrollSound();
                     }
                 }
 
