@@ -13,28 +13,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface ModContainerComponentModifiers {
-    ContainerComponentManipulator<SatchelContentsDataComponent> SATCHEL_CONTENTS = new ContainerComponentManipulator<>() {
-        public DataComponentType<SatchelContentsDataComponent> type() {
-            return ModDataComponents.SATCHEL_CONTENTS;
-        }
-
-        public SatchelContentsDataComponent empty() {
-            return SatchelContentsDataComponent.DEFAULT;
-        }
-
-        @Override
-        public SatchelContentsDataComponent setContents(SatchelContentsDataComponent component, Stream<ItemStack> stream) {
-            SatchelContentsDataComponent.Builder builder = (new SatchelContentsDataComponent.Builder(component)).clear();
-            Objects.requireNonNull(builder);
-            stream.forEach(builder::add);
-            return builder.build();
-        }
-
-        @Override
-        public Stream<ItemStack> getContents(SatchelContentsDataComponent component) {
-            return component.stacks().stream();
-        }
-    };
+    ContainerComponentManipulator<SatchelContentsDataComponent> SATCHEL_CONTENTS = new ContainerComponentManipulator<>(
+            ModDataComponents.SATCHEL_CONTENTS, SatchelContentsDataComponent.DEFAULT
+    );
 
     Map<DataComponentType<?>, ContainerComponentManipulator<?>> TYPE_TO_MODIFIER = Stream
             .of(

@@ -92,7 +92,8 @@ public class SatchelUseInventoryHudElement implements HudElement {
                         textRenderer, allComponents,
                         graphics.guiWidth() / 2 - componentWidth / 2 - 12,
                         graphics.guiHeight() - 42 - tooltipHeight,
-                        DefaultTooltipPositioner.INSTANCE, selectedItemStack.get(DataComponents.TOOLTIP_STYLE)
+                        DefaultTooltipPositioner.INSTANCE, selectedItemStack.get(DataComponents.TOOLTIP_STYLE),
+                        false
                 );
             }
         }

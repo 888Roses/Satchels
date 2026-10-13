@@ -62,7 +62,15 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
             int i = textRenderer.width(text.getVisualOrderText());
             int j = x + width / 2 - 12;
             ClientTooltipComponent tooltipComponent = ClientTooltipComponent.create(text.getVisualOrderText());
-            drawContext.tooltip(textRenderer, List.of(tooltipComponent), j - i / 2, y - 16 - 2, DefaultTooltipPositioner.INSTANCE, itemStack.get(DataComponents.TOOLTIP_STYLE));
+            drawContext.tooltip(
+                    textRenderer,
+                    List.of(tooltipComponent),
+                    j - i / 2,
+                    y - 16 - 2,
+                    DefaultTooltipPositioner.INSTANCE,
+                    itemStack.get(DataComponents.TOOLTIP_STYLE),
+                    false
+            );
         }
 
         int descriptionHeight = getDescriptionHeight(textRenderer);

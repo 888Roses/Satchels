@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "items": "#satchels:decrepit_satchels",
+          "expand": true,
+          "modifier": {
+            "type": "minecraft:set_contents",
+            "component": "satchels:satchel_content",
+            "entries": [
+              {
+                "type": "minecraft:loot_table",
+                "value": "satchels:chests/decrepit_satchels/contents",
+                "expand": true,
+                "condition": {
+                  "type": "minecraft:random_chance",
+                  "chance": 0.3
+                }
+              }
+            ]
+          },
+          "condition": {
+            "type": "minecraft:random_chance",
+            "chance": 0.45
+          }
+        }
+      ]
+    }
+  ]
+}
